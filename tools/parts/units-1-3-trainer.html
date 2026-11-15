@@ -1,0 +1,2313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Units 1–3 Trainer - New Enterprise C1</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f2ec;--surface:#fff;--s2:#f0ede6;--border:#e2ddd4;--b2:#ccc8bf;
+  --text:#1a1814;--t2:#6b6760;--t3:#9e9b96;
+  --teal:#1a7f6e;--tbg:#e8f5f2;--tbd:#a5d4cc;
+  --red:#c0392b;--rbg:#fdf0ee;--rbd:#f0b9b3;
+  --blue:#1d4ed8;--r:12px;--rs:8px;
+}
+body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+/* header */
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.logo{font-size:14px;font-weight:500}.logo span{color:var(--t3);font-weight:300}
+.hstats{display:flex;gap:14px}
+.hs{text-align:right}.hs-v{font-size:16px;font-weight:500;line-height:1}
+.hs-l{font-size:9px;color:var(--t3);margin-top:2px;letter-spacing:.05em;text-transform:uppercase}
+/* tabbar - mobile only */
+/* hamburger - mobile only */
+.ham{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;padding:6px;background:none;border:none;cursor:pointer;border-radius:var(--rs);flex-shrink:0}
+.ham span{display:block;height:2px;background:var(--text);border-radius:2px;transition:all .25s}
+/* drawer overlay */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:300;opacity:0;pointer-events:none;transition:opacity .25s}
+.drawer-overlay.open{opacity:1;pointer-events:auto}
+/* drawer panel */
+.drawer{position:fixed;top:0;left:0;height:100%;width:280px;background:var(--surface);z-index:301;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding:0 0 32px;box-shadow:4px 0 24px rgba(0,0,0,.12);pointer-events:none}
+.drawer.open{transform:translateX(0);pointer-events:auto}
+.drawer-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid var(--border);margin-bottom:6px}
+.drawer-title{font-size:13px;font-weight:500;color:var(--text)}
+.drawer-close{background:none;border:none;cursor:pointer;font-size:20px;color:var(--t3);line-height:1;padding:4px 6px;border-radius:var(--rs)}
+.drawer-close:hover{background:var(--s2);color:var(--text)}
+/* layout */
+.layout{display:flex;max-width:1160px;margin:0 auto;width:100%;min-height:calc(100vh - 56px)}
+/* sidebar */
+.sidebar{width:210px;flex-shrink:0;padding:14px 10px;border-right:1px solid var(--border);position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto}
+.sb-lbl{font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--t3);font-weight:500;margin:8px 0 4px;padding:0 8px}
+.nb{display:flex;align-items:center;gap:7px;width:100%;padding:7px 10px;border:none;background:none;cursor:pointer;border-radius:var(--rs);font-family:"DM Sans",sans-serif;font-size:12.5px;color:var(--t2);text-align:left;transition:all .15s;margin-bottom:1px}
+.nb:hover{background:var(--s2);color:var(--text)}.nb.active{background:var(--text);color:#fff}
+.nb.mis-nb{color:var(--red);font-size:11.5px;padding:5px 10px 5px 22px}
+.nb.mis-nb.active{background:var(--red);color:#fff}
+.nb.mis-nb:hover:not(.active){background:var(--rbg)}
+.nb .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.nb .badge{margin-left:auto;font-size:10px;background:var(--s2);color:var(--t3);padding:1px 6px;border-radius:20px}
+.nb.active .badge{background:rgba(255,255,255,.2);color:rgba(255,255,255,.8)}
+.nb.mis-nb .badge{background:var(--rbg);color:var(--red)}
+.nb.mis-nb.active .badge{background:rgba(255,255,255,.25);color:#fff}
+.sep{height:1px;background:var(--border);margin:6px 8px}
+.d-v1{background:#7c6fcd}
+.d-v2{background:#3b6fd1}
+.d-v3{background:#d0638a}
+.d-pv{background:#c4875e}
+.d-pr{background:#0f9b8e}
+.d-idm{background:#b8860b}
+.d-wf{background:#8a6d3b}
+.d-tn{background:#e07b4a}
+.d-ub{background:#a0522d}
+.d-ig{background:#4a9d8a}
+.d-ins{background:#9b59b6}
+.d-cp{background:#2e86c1}
+.d-la{background:#16a085}
+.d-ee{background:#c99a06}
+.d-ra{background:#5f6b7a}
+.d-pa{background:#1f3a5f}
+.d-fcu1{background:#7c6fcd}
+.d-fcu2{background:#3b6fd1}
+.d-fcu3{background:#d0638a}
+.d-fcpv{background:#c4875e}
+.d-fcidm{background:#b8860b}
+.d-all{background:var(--t2)}.d-sur{background:#f59e0b}.d-mis{background:var(--red)}.d-st{background:var(--blue)}
+/* content */
+.content{flex:1;padding:22px 26px;min-width:0}
+.q-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+.q-title{font-size:12px;color:var(--t3)}.q-ctr{font-size:12px;color:var(--t3)}
+.ptrack{height:3px;background:var(--border);border-radius:2px;margin-bottom:20px}
+.pfill{height:100%;border-radius:2px;background:var(--teal);transition:width .4s cubic-bezier(.4,0,.2,1)}
+.pfill.mis-mode{background:var(--red)}
+.qcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px 22px 18px;box-shadow:0 1px 4px rgba(0,0,0,.07);margin-bottom:12px}
+.qtag{display:inline-block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:500;margin-bottom:10px;color:var(--t3)}
+.qtag.v1{color:#7c6fcd}
+.qtag.v2{color:#3b6fd1}
+.qtag.v3{color:#d0638a}
+.qtag.pv{color:#c4875e}
+.qtag.pr{color:#0f9b8e}
+.qtag.idm{color:#b8860b}
+.qtag.wf{color:#8a6d3b}
+.qtag.tn{color:#e07b4a}
+.qtag.ub{color:#a0522d}
+.qtag.ig{color:#4a9d8a}
+.qtag.ins{color:#9b59b6}
+.qtag.cp{color:#2e86c1}
+.qtag.la{color:#16a085}
+.qtag.ee{color:#c99a06}
+.qtag.ra{color:#5f6b7a}
+.qtag.pa{color:#1f3a5f}
+.fb .why{margin-top:6px;font-size:12.5px;line-height:1.5;opacity:.95}
+.opts.long .opt{flex:1 1 100%;text-align:left;border-radius:var(--rs)}
+.qsen{font-family:"Lora",serif;font-size:18px;line-height:1.8;margin-bottom:18px}
+.blank{display:inline-block;border-bottom:2px solid var(--t2);min-width:56px;text-align:center;font-style:italic;padding:0 3px;transition:all .2s}
+.blank.ok{border-color:var(--teal);color:var(--teal);font-style:normal;font-weight:500}
+.blank.no{border-color:var(--red);color:var(--red);font-style:normal}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{padding:8px 18px;border:1px solid var(--b2);border-radius:24px;background:var(--surface);font-family:"DM Sans",sans-serif;font-size:14px;cursor:pointer;transition:all .15s;color:var(--text);min-height:40px}
+.opt:hover:not(:disabled){border-color:var(--t2);background:var(--s2)}
+.opt.correct{background:var(--tbg);border-color:var(--tbd);color:var(--teal);font-weight:500}
+.opt.wrong{background:var(--rbg);border-color:var(--rbd);color:var(--red)}
+.opt.reveal{background:var(--tbg);border-color:var(--tbd);color:var(--teal);opacity:.5}
+.opt:disabled{cursor:default}
+.fb{display:none;margin-top:14px;padding:11px 14px;border-radius:var(--rs);font-size:13px;line-height:1.6}
+.fb.show{display:block}
+.fb.correct{background:var(--tbg);border:1px solid var(--tbd);color:#0f5c4e}
+.fb.wrong{background:var(--rbg);border:1px solid var(--rbd);color:#8b1e1e}
+.fb .ex{font-family:"Lora",serif;font-style:italic;margin-top:4px;font-size:12px;opacity:.85}
+.fb .removed{font-size:11px;margin-top:4px;opacity:.7;font-style:normal}
+.qnav{display:flex;justify-content:flex-end}
+.btn-next{padding:10px 22px;background:var(--text);color:#fff;border:none;border-radius:var(--rs);font-family:"DM Sans",sans-serif;font-size:14px;cursor:pointer;display:none;min-height:42px}
+/* done */
+.done{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:36px 22px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.done-grade{font-size:44px;margin-bottom:4px}
+.done-score{font-size:48px;font-weight:500;letter-spacing:-.02em}
+.done-pct{font-size:13px;color:var(--t3);margin:4px 0 16px}
+.done-msg{font-size:14px;color:var(--t2);margin-bottom:18px}
+.done-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn-again{padding:10px 22px;background:var(--text);color:#fff;border:none;border-radius:var(--rs);font-family:"DM Sans",sans-serif;font-size:14px;cursor:pointer;min-height:42px}
+.btn-mis{padding:10px 22px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-family:"DM Sans",sans-serif;font-size:14px;cursor:pointer;min-height:42px}
+.done-mis-note{font-size:12px;color:var(--red);margin-top:12px;opacity:.8}
+/* stats */
+.sp{display:none}.sp.on{display:block}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.sc-v{font-size:24px;font-weight:500;letter-spacing:-.02em}
+.sc-l{font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);margin-top:3px}
+.sc.g .sc-v{color:var(--teal)}.sc.r .sc-v{color:var(--red)}
+.stitle{font-size:10px;font-weight:500;color:var(--t2);letter-spacing:.05em;text-transform:uppercase;margin-bottom:10px}
+.cbars{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.07);margin-bottom:16px}
+.cbr{display:flex;align-items:center;gap:10px;margin-bottom:11px}.cbr:last-child{margin-bottom:0}
+.cbr-n{font-size:12px;width:145px;flex-shrink:0;color:var(--t2)}
+.cbr-t{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.cbr-f{height:100%;border-radius:3px;background:var(--teal);transition:width .5s}
+.cbr-p{font-size:12px;font-weight:500;width:30px;text-align:right}
+.cbr-m{font-size:11px;color:var(--red);width:36px;text-align:right}
+.mlist{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.mhdr{display:grid;grid-template-columns:1fr auto auto;gap:10px;padding:8px 14px;background:var(--s2);border-bottom:1px solid var(--border);font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);font-weight:500}
+.mrow{display:grid;grid-template-columns:1fr auto auto;gap:10px;padding:9px 14px;border-bottom:1px solid var(--border);align-items:center}
+.mrow:last-child{border-bottom:none}
+.msen{font-family:"Lora",serif;font-style:italic;font-size:12px}
+.mans{background:var(--tbg);color:var(--teal);border:1px solid var(--tbd);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:500;white-space:nowrap}
+.mcnt{color:var(--red);font-weight:500;font-size:12px;white-space:nowrap}
+.no-m{padding:30px;text-align:center;color:var(--t3);font-size:13px}
+.btn-practice-top{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:1px solid var(--tbd);background:var(--tbg);color:var(--teal);border-radius:var(--rs);font-family:"DM Sans",sans-serif;font-size:13px;font-weight:500;cursor:pointer;margin-top:14px;margin-right:8px}
+.btn-practice-top:hover{opacity:.85}
+.btn-clr{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border:1px solid var(--rbd);background:var(--rbg);color:var(--red);border-radius:var(--rs);font-family:"DM Sans",sans-serif;font-size:12px;cursor:pointer;margin-top:16px}
+.empty{text-align:center;padding:48px 20px}
+.empty p{color:var(--t3);font-size:14px;margin-top:10px}
+/* responsive */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .ham{display:flex}
+  .layout{min-height:calc(100vh - 56px)}
+  .content{padding:14px 14px 28px}
+  .qsen{font-size:16px;line-height:1.7}.qcard{padding:16px 14px 14px}
+  .opts{gap:8px}
+  .opt{flex:1 1 calc(50% - 4px);text-align:center;font-size:15px;min-height:50px;padding:8px 10px}
+  .sg{grid-template-columns:repeat(2,1fr)}
+  .cbr-n{width:90px;font-size:11px}
+  .hs-l{display:none}.hs-v{font-size:15px}
+  .mhdr,.mrow{grid-template-columns:1fr 44px 34px;gap:5px;padding:8px 10px}
+  .msen{font-size:11px}
+  .btn-next,.btn-again,.btn-mis{width:100%;min-height:50px;font-size:15px}
+  .done-btns{flex-direction:column;align-items:stretch}
+  .qnav{margin-top:4px}.done{padding:28px 14px}.done-score{font-size:40px}
+}
+@media(max-width:400px){
+  .opt{flex:1 1 100%}.logo span{display:none}
+  header{padding:10px 12px}
+}
+/* ===== FLASHCARD / TYPING MODE ===== */
+.fc-wrap{display:none}.fc-wrap.on{display:block}
+.fc-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+.fc-title{font-size:12px;color:var(--t3)}.fc-ctr{font-size:12px;color:var(--t3)}
+
+/* single card (no flip) */
+.fc-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);box-shadow:0 1px 4px rgba(0,0,0,.07);
+  padding:26px 26px 22px;margin-bottom:14px;
+  transition:border-color .2s;
+}
+.fc-card.correct{border-color:#4caf87;box-shadow:0 0 0 2px rgba(76,175,135,.15)}
+.fc-card.wrong{border-color:#e05a5a;box-shadow:0 0 0 2px rgba(224,90,90,.12)}
+
+.fc-cat-tag{font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:500;color:var(--t3);margin-bottom:14px}
+.fc-cat-tag.fcu1{color:#7c6fcd}
+.fc-cat-tag.fcu2{color:#3b6fd1}
+.fc-cat-tag.fcu3{color:#d0638a}
+.fc-cat-tag.fcpv{color:#c4875e}
+.fc-cat-tag.fcidm{color:#b8860b}
+.fc-card .fc-ex{font-style:normal}
+
+/* definition */
+.fc-def{font-family:"Lora",serif;font-size:19px;line-height:1.7;color:var(--text);margin-bottom:18px}
+
+/* blank slots row */
+.fc-blanks{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:20px}
+.fc-blank-word{display:flex;gap:3px;align-items:flex-end}
+.fc-letter{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:22px;height:28px;
+  border-bottom:2px solid var(--border);
+  font-family:"DM Sans",sans-serif;font-size:15px;font-weight:500;
+  color:var(--text);transition:border-color .2s,color .2s;
+  text-transform:lowercase;
+}
+.fc-letter.revealed{color:var(--teal);border-color:var(--teal)}
+.fc-letter.correct-l{color:#4caf87;border-color:#4caf87}
+.fc-letter.wrong-l{color:#e05a5a;border-color:#e05a5a}
+.fc-blank-sep{width:14px}
+
+/* input row */
+.fc-input-row{display:flex;gap:8px;margin-bottom:12px}
+.fc-input{
+  flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:var(--rs);
+  font-family:"DM Sans",sans-serif;font-size:15px;color:var(--text);
+  background:var(--surface);outline:none;min-height:44px;
+  transition:border-color .15s;
+}
+.fc-input:focus{border-color:var(--teal)}
+.fc-input:disabled{opacity:.5}
+.fc-btn-check{
+  padding:0 18px;background:var(--text);color:#fff;border:none;
+  border-radius:var(--rs);font-family:"DM Sans",sans-serif;font-size:14px;
+  font-weight:500;cursor:pointer;min-height:44px;white-space:nowrap;
+  transition:opacity .15s;
+}
+.fc-btn-check:hover{opacity:.85}
+.fc-btn-check:disabled{opacity:.4;cursor:default}
+
+/* hint button */
+.fc-hint-row{display:flex;gap:8px;align-items:center;margin-bottom:14px}
+.fc-btn-hint{
+  padding:6px 14px;background:transparent;border:1px solid var(--border);
+  border-radius:var(--rs);font-family:"DM Sans",sans-serif;font-size:13px;
+  color:var(--t2);cursor:pointer;transition:all .15s;
+}
+.fc-btn-hint:hover{border-color:var(--teal);color:var(--teal)}
+.fc-btn-hint:disabled{opacity:.35;cursor:default}
+.fc-hint-msg{font-size:12px;color:var(--t3);font-style:italic}
+
+/* feedback */
+.fc-feedback{
+  display:none;padding:14px 16px;border-radius:var(--rs);
+  margin-bottom:14px;font-size:14px;line-height:1.6;
+}
+.fc-feedback.show{display:block}
+.fc-feedback.cor{background:rgba(76,175,135,.1);color:#2d7a5e}
+.fc-feedback.wro{background:rgba(224,90,90,.08);color:#b94040}
+.fc-feedback strong{font-weight:600}
+.fc-feedback .fc-ex{
+  margin-top:8px;font-family:"Lora",serif;font-style:italic;
+  font-size:13px;color:var(--t2);
+}
+
+/* next row */
+.fc-next-row{display:flex;gap:8px;margin-bottom:4px}
+.fc-btn-next{
+  flex:1;padding:11px;background:var(--tbg);border:1px solid var(--tbd);
+  color:var(--teal);border-radius:var(--rs);font-family:"DM Sans",sans-serif;
+  font-size:14px;font-weight:500;cursor:pointer;min-height:46px;transition:all .15s;
+}
+.fc-btn-next:hover{opacity:.85}
+.fc-btn-skip{
+  padding:11px 16px;background:transparent;border:1px solid var(--border);
+  color:var(--t2);border-radius:var(--rs);font-family:"DM Sans",sans-serif;
+  font-size:14px;cursor:pointer;min-height:46px;transition:all .15s;
+}
+.fc-btn-skip:hover{border-color:var(--t2)}
+
+/* done screen */
+.fc-done{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:36px 22px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.fc-done-emoji{font-size:52px;margin-bottom:10px}
+.fc-done-title{font-size:22px;font-weight:500;margin-bottom:8px}
+.fc-done-sub{font-size:14px;color:var(--t2);margin-bottom:22px}
+.fc-restart{padding:10px 24px;background:var(--text);color:#fff;border:none;border-radius:var(--rs);font-family:"DM Sans",sans-serif;font-size:14px;cursor:pointer;min-height:42px}
+@media(max-width:768px){
+  .fc-card{padding:18px 16px 16px}
+  .fc-def{font-size:16px}
+  .fc-letter{width:19px;height:25px;font-size:13px}
+  .fc-btn-next,.fc-btn-check{min-height:48px}
+}
+
+/* audio toggle */
+.audio-btn{background:none;border:1px solid var(--border);border-radius:var(--rs);
+  padding:5px 9px;cursor:pointer;font-size:15px;color:var(--t2);line-height:1;
+  transition:all .15s;flex-shrink:0}
+.audio-btn:hover{background:var(--s2);color:var(--text)}
+.audio-btn.on{border-color:var(--teal);color:var(--teal);background:var(--tbg)}
+</style>
+</head>
+<body>
+<header>
+  <button class="ham" id="ham-btn" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="logo">Units 1–3 Trainer <span>- New Enterprise C1</span></div>
+  <div class="hstats">
+    <div class="hs"><div class="hs-v" id="h-acc">--</div><div class="hs-l">Correct %</div></div>
+    <div class="hs"><div class="hs-v" id="h-tot">--</div><div class="hs-l">Progress</div></div>
+    <div class="hs"><div class="hs-v" id="h-str">0</div><div class="hs-l">Streak</div></div>
+  </div>
+  <button class="audio-btn" id="audio-btn" title="Toggle audio">&#128264;</button>
+</header>
+<!-- Drawer overlay -->
+<div class="drawer-overlay" id="drawer-overlay"></div>
+<!-- Sliding drawer (mobile nav) -->
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <span class="drawer-title">New Enterprise · Units 1–3</span>
+    <button class="drawer-close" id="drawer-close">&#10005;</button>
+  </div>
+  <div style="padding:0 8px">
+    <div class="sb-lbl">Vocabulary</div>
+    <button class="nb active" data-cat="v1" onclick="swD(this.dataset.cat)"><span class="dot d-v1"></span>Unit 1 vocabulary<span class="badge" id="dbg-v1">35</span></button>
+    <button class="nb mis-nb" data-cat="mis-v1" onclick="swD(this.dataset.cat)">Mistakes<span class="badge" id="dbg-mis-v1">0</span></button>
+    <button class="nb" data-cat="v2" onclick="swD(this.dataset.cat)"><span class="dot d-v2"></span>Unit 2 vocabulary<span class="badge" id="dbg-v2">42</span></button>
+    <button class="nb mis-nb" data-cat="mis-v2" onclick="swD(this.dataset.cat)">Mistakes<span class="badge" id="dbg-mis-v2">0</span></button>
+    <button class="nb" data-cat="v3" onclick="swD(this.dataset.cat)"><span class="dot d-v3"></span>Unit 3 vocabulary<span class="badge" id="dbg-v3">41</span></button>
+    <button class="nb mis-nb" data-cat="mis-v3" onclick="swD(this.dataset.cat)">Mistakes<span class="badge" id="dbg-mis-v3">0</span></button>
+    <button class="nb" data-cat="pv" onclick="swD(this.dataset.cat)"><span class="dot d-pv"></span>Phrasal verbs<span class="badge" id="dbg-pv">30</span></button>
+    <button class="nb mis-nb" data-cat="mis-pv" onclick="swD(this.dataset.cat)">Mistakes<span class="badge" id="dbg-mis-pv">0</span></button>
+    <button class="nb" data-cat="pr" onclick="swD(this.dataset.cat)"><span class="dot d-pr"></span>Prepositions<span class="badge" id="dbg-pr">31</span></button>
+    <button class="nb mis-nb" data-cat="mis-pr" onclick="swD(this.dataset.cat)">Mistakes<span class="badge" id="dbg-mis-pr">0</span></button>
+    <button class="nb" data-cat="idm" onclick="swD(this.dataset.cat)"><span class="dot d-idm"></span>Idioms &amp; similes<span class="badge" id="dbg-idm">24</span></button>
+    <button class="nb mis-nb" data-cat="mis-idm" onclick="swD(this.dataset.cat)">Mistakes<span class="badge" id="dbg-mis-idm">0</span></button>
+    <button class="nb" data-cat="wf" onclick="swD(this.dataset.cat)"><span class="dot d-wf"></span>Word formation<span class="badge" id="dbg-wf">40</span></button>
+    <button class="nb mis-nb" data-cat="mis-wf" onclick="swD(this.dataset.cat)">Mistakes<span class="badge" id="dbg-mis-wf">0</span></button>
+    <div class="sep"></div>
+    <div class="sb-lbl">Grammar</div>
+    <button class="nb" data-cat="tn" onclick="swD(this.dataset.cat)"><span class="dot d-tn"></span>Present &amp; past tenses<span class="badge" id="dbg-tn">36</span></button>
+    <button class="nb mis-nb" data-cat="mis-tn" onclick="swD(this.dataset.cat)">Mistakes<span class="badge" id="dbg-mis-tn">0</span></button>
+    <button class="nb" data-cat="ub" onclick="swD(this.dataset.cat)"><span class="dot d-ub"></span>used to / would<span class="badge" id="dbg-ub">15</span></button>
+    <button class="nb mis-nb" data-cat="mis-ub" onclick="swD(this.dataset.cat)">Mistakes<span class="badge" id="dbg-mis-ub">0</span></button>
+    <button class="nb" data-cat="ig" onclick="swD(this.dataset.cat)"><span class="dot d-ig"></span>Infinitive / -ing<span class="badge" id="dbg-ig">38</span></button>
+    <button class="nb mis-nb" data-cat="mis-ig" onclick="swD(this.dataset.cat)">Mistakes<span class="badge" id="dbg-mis-ig">0</span></button>
+    <button class="nb" data-cat="ins" onclick="swD(this.dataset.cat)"><span class="dot d-ins"></span>Intensifiers<span class="badge" id="dbg-ins">22</span></button>
+    <button class="nb mis-nb" data-cat="mis-ins" onclick="swD(this.dataset.cat)">Mistakes<span class="badge" id="dbg-mis-ins">0</span></button>
+    <button class="nb" data-cat="cp" onclick="swD(this.dataset.cat)"><span class="dot d-cp"></span>Comparisons<span class="badge" id="dbg-cp">27</span></button>
+    <button class="nb mis-nb" data-cat="mis-cp" onclick="swD(this.dataset.cat)">Mistakes<span class="badge" id="dbg-mis-cp">0</span></button>
+    <button class="nb" data-cat="la" onclick="swD(this.dataset.cat)"><span class="dot d-la"></span>like / as · it / there<span class="badge" id="dbg-la">26</span></button>
+    <button class="nb mis-nb" data-cat="mis-la" onclick="swD(this.dataset.cat)">Mistakes<span class="badge" id="dbg-mis-la">0</span></button>
+    <div class="sep"></div>
+    <div class="sb-lbl">Everyday English</div>
+    <button class="nb" data-cat="ee" onclick="swD(this.dataset.cat)"><span class="dot d-ee"></span>Everyday English<span class="badge" id="dbg-ee">24</span></button>
+    <button class="nb mis-nb" data-cat="mis-ee" onclick="swD(this.dataset.cat)">Mistakes<span class="badge" id="dbg-mis-ee">0</span></button>
+    <div class="sep"></div>
+    <div class="sb-lbl">Book tests (Units 1–3)</div>
+    <button class="nb" data-cat="ra" onclick="swD(this.dataset.cat)"><span class="dot d-ra"></span>WB Revision A<span class="badge" id="dbg-ra">50</span></button>
+    <button class="nb mis-nb" data-cat="mis-ra" onclick="swD(this.dataset.cat)">Mistakes<span class="badge" id="dbg-mis-ra">0</span></button>
+    <button class="nb" data-cat="pa" onclick="swD(this.dataset.cat)"><span class="dot d-pa"></span>GB Progress Test A<span class="badge" id="dbg-pa">20</span></button>
+    <button class="nb mis-nb" data-cat="mis-pa" onclick="swD(this.dataset.cat)">Mistakes<span class="badge" id="dbg-mis-pa">0</span></button>
+    <div class="sep"></div>
+    <button class="nb" data-cat="surprise" onclick="swD(this.dataset.cat)"><span class="dot" style="background:#f59e0b"></span>Surprise test<span class="badge">30</span></button>
+    <button class="nb" data-cat="all" onclick="swD(this.dataset.cat)"><span class="dot d-all"></span>All mixed<span class="badge" id="dbg-all">501</span></button>
+    <button class="nb mis-nb" data-cat="mis" onclick="swD(this.dataset.cat)">All mistakes<span class="badge" id="dbg-mis">0</span></button>
+    <div class="sep"></div>
+    <button class="nb" data-cat="stats" onclick="swD(this.dataset.cat)"><span class="dot d-st"></span>Statistics</button>
+    <div class="sep"></div>
+    <div class="sb-lbl">Flashcards (Word List)</div>
+    <button class="nb" data-cat="fc-u1" onclick="swD(this.dataset.cat)"><span class="dot d-fcu1"></span>Unit 1 words<span class="badge">106</span></button>
+    <button class="nb" data-cat="fc-u2" onclick="swD(this.dataset.cat)"><span class="dot d-fcu2"></span>Unit 2 words<span class="badge">99</span></button>
+    <button class="nb" data-cat="fc-u3" onclick="swD(this.dataset.cat)"><span class="dot d-fcu3"></span>Unit 3 words<span class="badge">130</span></button>
+    <button class="nb" data-cat="fc-pv" onclick="swD(this.dataset.cat)"><span class="dot d-fcpv"></span>Phrasal verbs<span class="badge">33</span></button>
+    <button class="nb" data-cat="fc-idm" onclick="swD(this.dataset.cat)"><span class="dot d-fcidm"></span>Idioms<span class="badge">20</span></button>
+  </div>
+</div>
+<div class="layout">
+<nav class="sidebar">
+  <div class="sb-lbl">Vocabulary</div>
+  <button class="nb active" data-cat="v1" onclick="sw(this.dataset.cat)"><span class="dot d-v1"></span>Unit 1 vocabulary<span class="badge" id="bg-v1">35</span></button>
+  <button class="nb mis-nb" data-cat="mis-v1" onclick="sw(this.dataset.cat)">Mistakes<span class="badge" id="bg-mis-v1">0</span></button>
+  <button class="nb" data-cat="v2" onclick="sw(this.dataset.cat)"><span class="dot d-v2"></span>Unit 2 vocabulary<span class="badge" id="bg-v2">42</span></button>
+  <button class="nb mis-nb" data-cat="mis-v2" onclick="sw(this.dataset.cat)">Mistakes<span class="badge" id="bg-mis-v2">0</span></button>
+  <button class="nb" data-cat="v3" onclick="sw(this.dataset.cat)"><span class="dot d-v3"></span>Unit 3 vocabulary<span class="badge" id="bg-v3">41</span></button>
+  <button class="nb mis-nb" data-cat="mis-v3" onclick="sw(this.dataset.cat)">Mistakes<span class="badge" id="bg-mis-v3">0</span></button>
+  <button class="nb" data-cat="pv" onclick="sw(this.dataset.cat)"><span class="dot d-pv"></span>Phrasal verbs<span class="badge" id="bg-pv">30</span></button>
+  <button class="nb mis-nb" data-cat="mis-pv" onclick="sw(this.dataset.cat)">Mistakes<span class="badge" id="bg-mis-pv">0</span></button>
+  <button class="nb" data-cat="pr" onclick="sw(this.dataset.cat)"><span class="dot d-pr"></span>Prepositions<span class="badge" id="bg-pr">31</span></button>
+  <button class="nb mis-nb" data-cat="mis-pr" onclick="sw(this.dataset.cat)">Mistakes<span class="badge" id="bg-mis-pr">0</span></button>
+  <button class="nb" data-cat="idm" onclick="sw(this.dataset.cat)"><span class="dot d-idm"></span>Idioms &amp; similes<span class="badge" id="bg-idm">24</span></button>
+  <button class="nb mis-nb" data-cat="mis-idm" onclick="sw(this.dataset.cat)">Mistakes<span class="badge" id="bg-mis-idm">0</span></button>
+  <button class="nb" data-cat="wf" onclick="sw(this.dataset.cat)"><span class="dot d-wf"></span>Word formation<span class="badge" id="bg-wf">40</span></button>
+  <button class="nb mis-nb" data-cat="mis-wf" onclick="sw(this.dataset.cat)">Mistakes<span class="badge" id="bg-mis-wf">0</span></button>
+  <div class="sep"></div>
+  <div class="sb-lbl">Grammar</div>
+  <button class="nb" data-cat="tn" onclick="sw(this.dataset.cat)"><span class="dot d-tn"></span>Present &amp; past tenses<span class="badge" id="bg-tn">36</span></button>
+  <button class="nb mis-nb" data-cat="mis-tn" onclick="sw(this.dataset.cat)">Mistakes<span class="badge" id="bg-mis-tn">0</span></button>
+  <button class="nb" data-cat="ub" onclick="sw(this.dataset.cat)"><span class="dot d-ub"></span>used to / would<span class="badge" id="bg-ub">15</span></button>
+  <button class="nb mis-nb" data-cat="mis-ub" onclick="sw(this.dataset.cat)">Mistakes<span class="badge" id="bg-mis-ub">0</span></button>
+  <button class="nb" data-cat="ig" onclick="sw(this.dataset.cat)"><span class="dot d-ig"></span>Infinitive / -ing<span class="badge" id="bg-ig">38</span></button>
+  <button class="nb mis-nb" data-cat="mis-ig" onclick="sw(this.dataset.cat)">Mistakes<span class="badge" id="bg-mis-ig">0</span></button>
+  <button class="nb" data-cat="ins" onclick="sw(this.dataset.cat)"><span class="dot d-ins"></span>Intensifiers<span class="badge" id="bg-ins">22</span></button>
+  <button class="nb mis-nb" data-cat="mis-ins" onclick="sw(this.dataset.cat)">Mistakes<span class="badge" id="bg-mis-ins">0</span></button>
+  <button class="nb" data-cat="cp" onclick="sw(this.dataset.cat)"><span class="dot d-cp"></span>Comparisons<span class="badge" id="bg-cp">27</span></button>
+  <button class="nb mis-nb" data-cat="mis-cp" onclick="sw(this.dataset.cat)">Mistakes<span class="badge" id="bg-mis-cp">0</span></button>
+  <button class="nb" data-cat="la" onclick="sw(this.dataset.cat)"><span class="dot d-la"></span>like / as · it / there<span class="badge" id="bg-la">26</span></button>
+  <button class="nb mis-nb" data-cat="mis-la" onclick="sw(this.dataset.cat)">Mistakes<span class="badge" id="bg-mis-la">0</span></button>
+  <div class="sep"></div>
+  <div class="sb-lbl">Everyday English</div>
+  <button class="nb" data-cat="ee" onclick="sw(this.dataset.cat)"><span class="dot d-ee"></span>Everyday English<span class="badge" id="bg-ee">24</span></button>
+  <button class="nb mis-nb" data-cat="mis-ee" onclick="sw(this.dataset.cat)">Mistakes<span class="badge" id="bg-mis-ee">0</span></button>
+  <div class="sep"></div>
+  <div class="sb-lbl">Book tests (Units 1–3)</div>
+  <button class="nb" data-cat="ra" onclick="sw(this.dataset.cat)"><span class="dot d-ra"></span>WB Revision A<span class="badge" id="bg-ra">50</span></button>
+  <button class="nb mis-nb" data-cat="mis-ra" onclick="sw(this.dataset.cat)">Mistakes<span class="badge" id="bg-mis-ra">0</span></button>
+  <button class="nb" data-cat="pa" onclick="sw(this.dataset.cat)"><span class="dot d-pa"></span>GB Progress Test A<span class="badge" id="bg-pa">20</span></button>
+  <button class="nb mis-nb" data-cat="mis-pa" onclick="sw(this.dataset.cat)">Mistakes<span class="badge" id="bg-mis-pa">0</span></button>
+  <div class="sep"></div>
+  <button class="nb" data-cat="surprise" onclick="sw(this.dataset.cat)"><span class="dot" style="background:#f59e0b"></span>Surprise test<span class="badge">30</span></button>
+  <button class="nb" data-cat="all" onclick="sw(this.dataset.cat)"><span class="dot d-all"></span>All mixed<span class="badge" id="bg-all">501</span></button>
+  <button class="nb mis-nb" data-cat="mis" onclick="sw(this.dataset.cat)">All mistakes<span class="badge" id="bg-mis">0</span></button>
+  <div class="sep"></div>
+  <button class="nb" data-cat="stats" onclick="sw(this.dataset.cat)"><span class="dot d-st"></span>Statistics</button>
+  <div class="sep"></div>
+  <div class="sb-lbl">Flashcards (Word List)</div>
+  <button class="nb" data-cat="fc-u1" onclick="sw(this.dataset.cat)"><span class="dot d-fcu1"></span>Unit 1 words<span class="badge">106</span></button>
+  <button class="nb" data-cat="fc-u2" onclick="sw(this.dataset.cat)"><span class="dot d-fcu2"></span>Unit 2 words<span class="badge">99</span></button>
+  <button class="nb" data-cat="fc-u3" onclick="sw(this.dataset.cat)"><span class="dot d-fcu3"></span>Unit 3 words<span class="badge">130</span></button>
+  <button class="nb" data-cat="fc-pv" onclick="sw(this.dataset.cat)"><span class="dot d-fcpv"></span>Phrasal verbs<span class="badge">33</span></button>
+  <button class="nb" data-cat="fc-idm" onclick="sw(this.dataset.cat)"><span class="dot d-fcidm"></span>Idioms<span class="badge">20</span></button>
+</nav>
+<div class="content">
+  <div id="qp">
+    <div class="q-head"><span class="q-title" id="qt">Unit 1 vocabulary: Dream big</span><span class="q-ctr" id="qc"></span></div>
+    <div class="ptrack"><div class="pfill" id="pf" style="width:0%"></div></div>
+    <div id="qa"></div>
+  </div>
+  <div id="sp" class="sp">
+    <div class="sg">
+      <div class="sc g"><div class="sc-v" id="s-acc">--</div><div class="sc-l">Accuracy</div></div>
+      <div class="sc"><div class="sc-v" id="s-tot">0</div><div class="sc-l">Answered</div></div>
+      <div class="sc g"><div class="sc-v" id="s-cor">0</div><div class="sc-l">Correct</div></div>
+      <div class="sc r"><div class="sc-v" id="s-wrg">0</div><div class="sc-l">Wrong</div></div>
+    </div>
+    <div class="stitle">Accuracy &amp; mistakes by category</div>
+    <div class="cbars">
+      <div class="cbr"><div class="cbr-n">Unit 1 vocabulary</div><div class="cbr-t"><div class="cbr-f" id="bar-v1"></div></div><div class="cbr-p" id="pct-v1">--</div><div class="cbr-m" id="mis-cnt-v1">--</div></div>
+      <div class="cbr"><div class="cbr-n">Unit 2 vocabulary</div><div class="cbr-t"><div class="cbr-f" id="bar-v2"></div></div><div class="cbr-p" id="pct-v2">--</div><div class="cbr-m" id="mis-cnt-v2">--</div></div>
+      <div class="cbr"><div class="cbr-n">Unit 3 vocabulary</div><div class="cbr-t"><div class="cbr-f" id="bar-v3"></div></div><div class="cbr-p" id="pct-v3">--</div><div class="cbr-m" id="mis-cnt-v3">--</div></div>
+      <div class="cbr"><div class="cbr-n">Phrasal verbs</div><div class="cbr-t"><div class="cbr-f" id="bar-pv"></div></div><div class="cbr-p" id="pct-pv">--</div><div class="cbr-m" id="mis-cnt-pv">--</div></div>
+      <div class="cbr"><div class="cbr-n">Prepositions</div><div class="cbr-t"><div class="cbr-f" id="bar-pr"></div></div><div class="cbr-p" id="pct-pr">--</div><div class="cbr-m" id="mis-cnt-pr">--</div></div>
+      <div class="cbr"><div class="cbr-n">Idioms &amp; similes</div><div class="cbr-t"><div class="cbr-f" id="bar-idm"></div></div><div class="cbr-p" id="pct-idm">--</div><div class="cbr-m" id="mis-cnt-idm">--</div></div>
+      <div class="cbr"><div class="cbr-n">Word formation</div><div class="cbr-t"><div class="cbr-f" id="bar-wf"></div></div><div class="cbr-p" id="pct-wf">--</div><div class="cbr-m" id="mis-cnt-wf">--</div></div>
+      <div class="cbr"><div class="cbr-n">Present &amp; past tenses</div><div class="cbr-t"><div class="cbr-f" id="bar-tn"></div></div><div class="cbr-p" id="pct-tn">--</div><div class="cbr-m" id="mis-cnt-tn">--</div></div>
+      <div class="cbr"><div class="cbr-n">used to / would</div><div class="cbr-t"><div class="cbr-f" id="bar-ub"></div></div><div class="cbr-p" id="pct-ub">--</div><div class="cbr-m" id="mis-cnt-ub">--</div></div>
+      <div class="cbr"><div class="cbr-n">Infinitive / -ing</div><div class="cbr-t"><div class="cbr-f" id="bar-ig"></div></div><div class="cbr-p" id="pct-ig">--</div><div class="cbr-m" id="mis-cnt-ig">--</div></div>
+      <div class="cbr"><div class="cbr-n">Intensifiers</div><div class="cbr-t"><div class="cbr-f" id="bar-ins"></div></div><div class="cbr-p" id="pct-ins">--</div><div class="cbr-m" id="mis-cnt-ins">--</div></div>
+      <div class="cbr"><div class="cbr-n">Comparisons</div><div class="cbr-t"><div class="cbr-f" id="bar-cp"></div></div><div class="cbr-p" id="pct-cp">--</div><div class="cbr-m" id="mis-cnt-cp">--</div></div>
+      <div class="cbr"><div class="cbr-n">like / as · it / there</div><div class="cbr-t"><div class="cbr-f" id="bar-la"></div></div><div class="cbr-p" id="pct-la">--</div><div class="cbr-m" id="mis-cnt-la">--</div></div>
+      <div class="cbr"><div class="cbr-n">Everyday English</div><div class="cbr-t"><div class="cbr-f" id="bar-ee"></div></div><div class="cbr-p" id="pct-ee">--</div><div class="cbr-m" id="mis-cnt-ee">--</div></div>
+      <div class="cbr"><div class="cbr-n">WB Revision A</div><div class="cbr-t"><div class="cbr-f" id="bar-ra"></div></div><div class="cbr-p" id="pct-ra">--</div><div class="cbr-m" id="mis-cnt-ra">--</div></div>
+      <div class="cbr"><div class="cbr-n">GB Progress Test A</div><div class="cbr-t"><div class="cbr-f" id="bar-pa"></div></div><div class="cbr-p" id="pct-pa">--</div><div class="cbr-m" id="mis-cnt-pa">--</div></div>
+    </div>
+    <div style="font-size:10px;color:var(--t3);margin-bottom:16px;text-align:right">% correct &nbsp;|&nbsp; <span style="color:var(--red)">errors remaining</span></div>
+    <div class="stitle">Most challenging questions <span style="font-weight:400;color:var(--t3);font-size:11px">(2+ mistakes &middot; 5 correct to clear)</span></div>
+    <div class="mlist" id="topm"></div>
+    <button id="practice-top-btn" class="btn-practice-top" style="display:none">&#9654; Practice most challenging</button>
+
+    <div class="stitle" style="margin-top:24px">Recent mistakes <span style="font-weight:400;color:var(--t3);font-size:11px">(1 mistake &middot; get it right to clear)</span></div>
+    <div class="mlist" id="allm"></div>
+    <button id="practice-others-btn" class="btn-practice-top" style="display:none">&#9654; Practice recent mistakes</button>
+
+    <div class="stitle" style="margin-top:24px">Old mistakes <span style="font-weight:400;color:var(--t3);font-size:11px">(resolved &mdash; everything you&#39;ve overcome)</span></div>
+    <div class="mlist" id="oldm"></div>
+    <button id="practice-old-btn" class="btn-practice-top" style="display:none">&#9654; Practice old mistakes</button>
+
+    <button class="btn-clr" onclick="clrStats()">&#10005; Reset all statistics</button>
+  </div>
+  <!-- FLASHCARD PANEL -->
+  <div id="fcp" class="fc-wrap">
+    <div class="fc-head"><span class="fc-title" id="fc-title">Flashcards</span><span class="fc-ctr" id="fc-ctr"></span></div>
+    <div class="ptrack"><div class="pfill" id="fc-pf" style="width:0%"></div></div>
+    <div id="fc-area"></div>
+  </div>
+</div>
+</div>
+<script>
+var D = {
+v1:[
+  {id:"v1_01",s:"Nick travels the world to ___ people to be better.",a:"inspire",o:["inspire", "achieve", "fulfil", "chase"],x:"inspire people to be better (SB 1a)"},
+  {id:"v1_02",s:"Don't let fear stop you — ___ your dreams!",a:"chase",o:["chase", "project", "gain", "resist"],x:"chase a dream = ოცნებისკენ სწრაფვა"},
+  {id:"v1_03",s:"If you want to succeed, you have to ___ every opportunity that comes your way.",a:"grab",o:["grab", "project", "fulfil", "find"],x:"grab an opportunity = შესაძლებლობის ხელში ჩაგდება"},
+  {id:"v1_04",s:"She finally ___ her potential when she became a doctor.",a:"fulfilled",o:["fulfilled", "managed", "succeeded", "projected"],x:"fulfil your potential"},
+  {id:"v1_05",s:"After years of trying different jobs, Tom finally found his ___ as a teacher.",a:"calling",o:["calling", "prospect", "condition", "probability"],x:"find your calling = შენი საქმის პოვნა"},
+  {id:"v1_06",s:"During the interview, try to ___ confidence, even if you feel nervous.",a:"project",o:["project", "chase", "grab", "inspire"],x:"project confidence = თავდაჯერებულობის გამოხატვა"},
+  {id:"v1_07",s:"Despite his disability, Nick has ___ to live a full and active life.",a:"managed",o:["managed", "achieved", "succeeded", "fulfilled"],x:"manage to + V; achieve და fulfil to-ს არ იღებს, succeed — in + -ing"},
+  {id:"v1_08",s:"Kate ___ in passing all her exams, even though she was ill.",a:"succeeded",o:["succeeded", "managed", "achieved", "fulfilled"],x:"succeed in + -ing"},
+  {id:"v1_09",s:"It took her ten years, but she finally ___ her goal of running a marathon.",a:"achieved",o:["achieved", "managed", "succeeded", "persisted"],x:"achieve a goal"},
+  {id:"v1_10",s:"Many young people ___ top athletes and try to copy everything they do.",a:"idolise",o:["idolise", "honour", "prize", "achieve"],x:"idolise = კერპად აქცევს"},
+  {id:"v1_11",s:"Our grandparents ___ their independence above everything else.",a:"prize",o:["prize", "idolise", "honour", "approach"],x:"prize = ძალიან აფასებს"},
+  {id:"v1_12",s:"The school held a ceremony to ___ the teachers who had worked there for thirty years.",a:"honour",o:["honour", "prize", "idolise", "adore"],x:"honour = საჯაროდ პატივს მიაგებს"},
+  {id:"v1_13",s:"After the accident, his leg was in very bad ___.",a:"condition",o:["condition", "situation", "position", "prospect"],x:"condition — ჯანმრთელობის ან ნივთის მდგომარეობა"},
+  {id:"v1_14",s:"I was going through a bad ___ in my life when I met him.",a:"situation",o:["situation", "condition", "position", "state"],x:"situation — ვითარება, რომელშიც ადამიანი აღმოჩნდა"},
+  {id:"v1_15",s:"Even as a child, she showed the ___ to become a great leader.",a:"potential",o:["potential", "possibility", "probability", "prospect"],x:"potential = ნიჭი, პოტენციალი"},
+  {id:"v1_16",s:"There's a high ___ of rain tomorrow, so take an umbrella.",a:"probability",o:["probability", "potential", "prospect", "position"],x:"probability = ალბათობა"},
+  {id:"v1_17",s:"The ___ of finding a good job after university made him study harder.",a:"prospect",o:["prospect", "potential", "condition", "calling"],x:"prospect = მოსალოდნელი პერსპექტივა"},
+  {id:"v1_18",s:"Even when everyone around her panicked, Jane remained ___ and calm.",a:"composed",o:["composed", "indifferent", "impudent", "insecure"],x:"composed = მშვიდი, თავდაჭერილი"},
+  {id:"v1_19",s:"He doesn't care what happens to anyone; he's completely ___.",a:"indifferent",o:["indifferent", "composed", "assertive", "modest"],x:"indifferent = გულგრილი"},
+  {id:"v1_20",s:"She is ___ enough to state her opinions clearly without being rude.",a:"assertive",o:["assertive", "ruthless", "impudent", "reserved"],x:"assertive = აზრს მტკიცედ, მაგრამ თავაზიანად ამბობს"},
+  {id:"v1_21",s:"The boss was ___ and fired half of the staff without any warning.",a:"ruthless",o:["ruthless", "assertive", "modest", "thoughtful"],x:"ruthless = დაუნდობელი"},
+  {id:"v1_22",s:"Despite winning the gold medal, Tom is very ___ and never talks about his success.",a:"modest",o:["modest", "insecure", "arrogant", "stubborn"],x:"modest = თავმდაბალი"},
+  {id:"v1_23",s:"Don't be so ___! Try to listen to other people's ideas.",a:"narrow-minded",o:["narrow-minded", "focused", "composed", "modest"],x:"narrow-minded = სხვის აზრს არ იღებს"},
+  {id:"v1_24",s:"My brother is so ___; once he's made a decision, nothing will change his mind, even when he's wrong.",a:"stubborn",o:["stubborn", "determined", "generous", "reserved"],x:"stubborn (ჯიუტი) უარყოფითია; determined (მტკიცედ გადაწყვეტილი) — დადებითი"},
+  {id:"v1_25",s:"She was ___ to finish the race, even with a twisted ankle.",a:"determined",o:["determined", "stubborn", "indifferent", "wasteful"],x:"determined to + V"},
+  {id:"v1_26",s:"He's quite ___ and rarely shares his feelings with others.",a:"reserved",o:["reserved", "enthusiastic", "impudent", "passionate"],x:"reserved = თავშეკავებული"},
+  {id:"v1_27",s:"It's ___ to throw away food that you could eat tomorrow.",a:"wasteful",o:["wasteful", "generous", "devoted", "modest"],x:"wasteful = მფლანგველი"},
+  {id:"v1_28",s:"The ___ fox tricked the other animals into giving him their food.",a:"cunning",o:["cunning", "generous", "devoted", "reserved"],x:"cunning = ცბიერი"},
+  {id:"v1_29",s:"The boy was so ___ that he answered the teacher back in front of the whole class.",a:"impudent",o:["impudent", "modest", "composed", "reserved"],x:"impudent = თავხედი"},
+  {id:"v1_30",s:"Nick is a ___ father who spends all his free time with his children.",a:"devoted",o:["devoted", "wasteful", "ruthless", "indifferent"],x:"devoted father (SB 1a)"},
+  {id:"v1_31",s:"Nick was born with a rare genetic ___.",a:"disorder",o:["disorder", "situation", "position", "prospect"],x:"genetic disorder (SB 1a)"},
+  {id:"v1_32",s:"She feels ___ about her English and is afraid to speak in class.",a:"insecure",o:["insecure", "self-confident", "assertive", "arrogant"],x:"insecure = თავდაუჯერებელი"},
+  {id:"v1_33",s:"Many teenagers see the famous footballer as a ___ model.",a:"role",o:["role", "life", "dream", "star"],x:"role model = მისაბაძი მაგალითი"},
+  {id:"v1_34",s:"Our new teacher is so ___ about history that the whole class has started to love it.",a:"enthusiastic",o:["enthusiastic", "indifferent", "reserved", "wasteful"],x:"enthusiastic = ენთუზიაზმით სავსე"},
+  {id:"v1_35",s:"He's very ___ — he always has a clever answer ready.",a:"quick-witted",o:["quick-witted", "narrow-minded", "insecure", "wasteful"],x:"quick-witted = სწრაფად მოაზროვნე"}
+],
+v2:[
+  {id:"v2_01",s:"We stayed up late to watch the meteor ___.",a:"shower",o:["shower", "rain", "storm", "stream"],x:"meteor shower"},
+  {id:"v2_02",s:"Our galaxy is called the Milky ___.",a:"Way",o:["Way", "Road", "Path", "Line"],x:"Milky Way = ირმის ნახტომი"},
+  {id:"v2_03",s:"Scientists believe the universe was created by the Big ___.",a:"Bang",o:["Bang", "Blast", "Boom", "Burst"],x:"the Big Bang"},
+  {id:"v2_04",s:"Nothing, not even light, can escape from a black ___.",a:"hole",o:["hole", "gap", "space", "pit"],x:"black hole"},
+  {id:"v2_05",s:"Jupiter is a gas ___ made mostly of hydrogen and helium.",a:"giant",o:["giant", "monster", "body", "ball"],x:"gas giant"},
+  {id:"v2_06",s:"During a total ___, the Moon completely covers the Sun.",a:"eclipse",o:["eclipse", "orbit", "shower", "constellation"],x:"total eclipse = სრული დაბნელება"},
+  {id:"v2_07",s:"Orion is one of the easiest ___ to find in the night sky.",a:"constellations",o:["constellations", "hemispheres", "eclipses", "orbits"],x:"constellation = თანავარსკვლავედი"},
+  {id:"v2_08",s:"Planets, stars and moons are all celestial ___.",a:"bodies",o:["bodies", "figures", "items", "shapes"],x:"celestial body = ციური სხეული"},
+  {id:"v2_09",s:"Australia is in the southern ___.",a:"hemisphere",o:["hemisphere", "constellation", "orbit", "horizon"],x:"hemisphere = ნახევარსფერო"},
+  {id:"v2_10",s:"Pieces of ___ from old satellites are still circling the Earth.",a:"debris",o:["debris", "dawn", "gaze", "credit"],x:"debris = ნამსხვრევები"},
+  {id:"v2_11",s:"He did all the work, but his boss got all the ___.",a:"credit",o:["credit", "debris", "sacrifice", "harvest"],x:"credit = დამსახურების აღიარება"},
+  {id:"v2_12",s:"The ancient Aztecs offered human ___ to their gods.",a:"sacrifices",o:["sacrifices", "harvests", "infancies", "boasts"],x:"sacrifice = მსხვერპლშეწირვა"},
+  {id:"v2_13",s:"Farmers used the light of the full moon to ___ their crops late into the night.",a:"harvest",o:["harvest", "sacrifice", "boast", "anger"],x:"harvest = მოსავლის აღება"},
+  {id:"v2_14",s:"In ancient times, people believed that an eclipse meant they had ___ the gods.",a:"angered",o:["angered", "boasted", "spied", "streaked"],x:"anger (v) = გააბრაზა"},
+  {id:"v2_15",s:"Space exploration is still in its ___; there is so much more to discover.",a:"infancy",o:["infancy", "dusk", "harvest", "debris"],x:"in its infancy = ჯერ საწყის ეტაპზეა"},
+  {id:"v2_16",s:"We got up at ___ to watch the sun rise over the sea.",a:"dawn",o:["dawn", "dusk", "infancy", "gaze"],x:"dawn = განთიადი"},
+  {id:"v2_17",s:"As ___ fell, the first stars appeared in the sky.",a:"dusk",o:["dusk", "dawn", "debris", "gaze"],x:"dusk = ბინდი"},
+  {id:"v2_18",s:"In the legend, a ___ dragon tried to eat the Sun.",a:"fearsome",o:["fearsome", "fitting", "celestial", "total"],x:"fearsome = შემზარავი"},
+  {id:"v2_19",s:"Watching the sunset from the beach was a ___ end to a perfect day.",a:"fitting",o:["fitting", "fearsome", "celestial", "total"],x:"fitting = შესაფერისი"},
+  {id:"v2_20",s:"He likes to ___ about his expensive new telescope.",a:"boast",o:["boast", "gaze", "spy", "streak"],x:"boast about = ტრაბახობს"},
+  {id:"v2_21",s:"Looking out of the window, I ___ a shooting star.",a:"spied",o:["spied", "boasted", "angered", "harvested"],x:"spy = თვალი მოჰკრა"},
+  {id:"v2_22",s:"The football stadium was full of cheering ___.",a:"spectators",o:["spectators", "viewers", "onlookers", "observers"],x:"spectator — სპორტულ ღონისძიებას უყურებს"},
+  {id:"v2_23",s:"Millions of ___ watched the eclipse live on TV.",a:"viewers",o:["viewers", "spectators", "onlookers", "observers"],x:"viewer — ტელემაყურებელი"},
+  {id:"v2_24",s:"A few ___ stopped to look at the car accident, but nobody helped.",a:"onlookers",o:["onlookers", "viewers", "spectators", "audiences"],x:"onlooker — შემთხვევითი თვალის მომსწრე"},
+  {id:"v2_25",s:"UN ___ were sent to watch the elections but were not allowed to take part.",a:"observers",o:["observers", "spectators", "onlookers", "viewers"],x:"observer — უყურებს, მაგრამ არ ერევა"},
+  {id:"v2_26",s:"The castle is an important historic ___.",a:"site",o:["site", "location", "position", "area"],x:"site = მნიშვნელოვანი, ისტორიული ადგილი"},
+  {id:"v2_27",s:"Police are investigating a serious ___ at the airport.",a:"incident",o:["incident", "occurrence", "happening", "sign"],x:"incident = სერიოზული ან უჩვეულო შემთხვევა"},
+  {id:"v2_28",s:"The concert was the biggest social ___ of the year.",a:"event",o:["event", "incident", "occurrence", "symptom"],x:"event = ღონისძიება"},
+  {id:"v2_29",s:"A red sky at night is said to be a ___ of good weather.",a:"sign",o:["sign", "symbol", "symptom", "signal"],x:"sign = ნიშანი"},
+  {id:"v2_30",s:"A high temperature is a common ___ of flu.",a:"symptom",o:["symptom", "symbol", "signal", "site"],x:"symptom — დაავადების ნიშანი"},
+  {id:"v2_31",s:"The dove is a ___ of peace.",a:"symbol",o:["symbol", "sign", "symptom", "signal"],x:"symbol = სიმბოლო"},
+  {id:"v2_32",s:"The runners waited for the ___ to start the race.",a:"signal",o:["signal", "symbol", "symptom", "site"],x:"signal — მოქმედება ან ხმა, რომელიც შეტყობინებას გადასცემს"},
+  {id:"v2_33",s:"The midday sun was ___ and there was no shade anywhere.",a:"blazing",o:["blazing", "flickering", "twinkling", "glowing"],x:"blaze = ძლიერად ანათებს, გიზგიზებს"},
+  {id:"v2_34",s:"Stars were ___ in the clear night sky.",a:"twinkling",o:["twinkling", "blazing", "dazzling", "beaming"],x:"twinkle = ციმციმებს"},
+  {id:"v2_35",s:"The candles ___ in the wind and then went out.",a:"flickered",o:["flickered", "blazed", "beamed", "sparkled"],x:"flicker = ცახცახებს, არამდგრადად ანათებს"},
+  {id:"v2_36",s:"The headlights of the car ___ me, and I couldn't see the road for a moment.",a:"dazzled",o:["dazzled", "flickered", "glowed", "twinkled"],x:"dazzle = თვალს სჭრის"},
+  {id:"v2_37",s:"The embers of the fire were still ___ softly in the dark.",a:"glowing",o:["glowing", "blazing", "dazzling", "beaming"],x:"glow = რბილად ანათებს, ღვივის"},
+  {id:"v2_38",s:"Her diamond ring ___ in the candlelight.",a:"sparkled",o:["sparkled", "blazed", "beamed", "flickered"],x:"sparkle = ელვარებს"},
+  {id:"v2_39",s:"A ray of sunlight ___ through the clouds.",a:"pierced",o:["pierced", "twinkled", "glittered", "dazzled"],x:"pierce = (შუქი) უცებ გაარღვია"},
+  {id:"v2_40",s:"The sun ___ on the frozen lake.",a:"gleamed",o:["gleamed", "flickered", "twinkled", "dazzled"],x:"gleam = არეკლილი შუქით ბრწყინავს"},
+  {id:"v2_41",s:"A warm sun ___ down on the beach.",a:"beamed",o:["beamed", "flickered", "twinkled", "pierced"],x:"beam = სხივს აფრქვევს"},
+  {id:"v2_42",s:"The meteor ___ across the night sky in less than a second.",a:"streaked",o:["streaked", "gazed", "spied", "glowed"],x:"streak = ზოლივით სწრაფად გადაკვეთა"}
+],
+v3:[
+  {id:"v3_01",s:"At the weekend I prefer ___ clothes like jeans and a T-shirt.",a:"casual",o:["casual", "formal", "flowery", "pleated"],x:"casual = არაფორმალური"},
+  {id:"v3_02",s:"These trousers are too ___; I can hardly breathe!",a:"tight",o:["tight", "baggy", "loose", "plain"],x:"tight = ვიწრო"},
+  {id:"v3_03",s:"He always wears ___ jeans that hang off his hips.",a:"baggy",o:["baggy", "tight", "skinny", "pleated"],x:"baggy = ფართო"},
+  {id:"v3_04",s:"She wore a ___ dress with roses all over it.",a:"flowery",o:["flowery", "plain", "scruffy", "casual"],x:"flowery = ყვავილებიანი"},
+  {id:"v3_05",s:"I prefer ___ T-shirts without any pictures or words on them.",a:"plain",o:["plain", "flowery", "tie-dye", "pleated"],x:"plain = უბრალო, უნახატო"},
+  {id:"v3_06",s:"You can't go to the interview in those ___ old jeans!",a:"scruffy",o:["scruffy", "stylish", "classic", "sustainable"],x:"scruffy = ძველი და მოუწესრიგებელი"},
+  {id:"v3_07",s:"I bought this jacket ___ from a charity shop.",a:"second-hand",o:["second-hand", "sustainable", "in fashion", "in stock"],x:"second-hand = მეორადი"},
+  {id:"v3_08",s:"Very few people have their clothes made to measure; most of us buy them off the ___.",a:"rack",o:["rack", "shelf", "rail", "peg"],x:"off the rack = მზა"},
+  {id:"v3_09",s:"I'm sorry, that size isn't in ___ at the moment.",a:"stock",o:["stock", "fashion", "store", "style"],x:"in stock = მარაგშია"},
+  {id:"v3_10",s:"Cheap ___ fashion is bad for the environment because clothes are thrown away so quickly.",a:"fast",o:["fast", "quick", "slow", "rapid"],x:"fast fashion"},
+  {id:"v3_11",s:"My grandmother is very ___; she never wastes money.",a:"thrifty",o:["thrifty", "wasteful", "generous", "scruffy"],x:"thrifty = მომჭირნე"},
+  {id:"v3_12",s:"Organic cotton is more ___ because it doesn't damage the environment.",a:"sustainable",o:["sustainable", "irreparable", "disposable", "scruffy"],x:"sustainable = გარემოსთვის უსაფრთხო"},
+  {id:"v3_13",s:"The factory caused ___ damage to the river; it will never be clean again.",a:"irreparable",o:["irreparable", "sustainable", "thrifty", "durable"],x:"irreparable = გამოუსწორებელი"},
+  {id:"v3_14",s:"A ___ is a single piece of clothing.",a:"garment",o:["garment", "wardrobe", "textile", "fibre"],x:"garment"},
+  {id:"v3_15",s:"I hung my clothes in the ___.",a:"wardrobe",o:["wardrobe", "garment", "outlet", "patch"],x:"wardrobe = გარდერობი"},
+  {id:"v3_16",s:"She learned ___ from her grandmother and now makes her own scarves with wool and two needles.",a:"knitting",o:["knitting", "renovating", "rehearsing", "patching"],x:"knitting = ქსოვა"},
+  {id:"v3_17",s:"Jane and her sister ___ a small clothes shop in town.",a:"co-own",o:["co-own", "patch", "restore", "rehearse"],x:"co-own = ერთად ფლობენ"},
+  {id:"v3_18",s:"Many ___ countries produce cheap clothes for Western shops.",a:"developing",o:["developing", "developed", "sustainable", "thrifty"],x:"developing country"},
+  {id:"v3_19",s:"She made the dress from ___ using an old pattern.",a:"scratch",o:["scratch", "start", "beginning", "zero"],x:"from scratch = თავიდან, ნულიდან"},
+  {id:"v3_20",s:"Everyone should ___ their right to vote.",a:"exercise",o:["exercise", "perform", "train", "rehearse"],x:"exercise a right = უფლებით სარგებლობა"},
+  {id:"v3_21",s:"The band ___ every day for a month before the concert.",a:"rehearsed",o:["rehearsed", "exercised", "performed", "mended"],x:"rehearse = რეპეტიცია"},
+  {id:"v3_22",s:"The actors ___ the play in front of 2,000 people.",a:"performed",o:["performed", "rehearsed", "exercised", "trained"],x:"perform = შეასრულეს (სცენაზე)"},
+  {id:"v3_23",s:"Can you ___ the hole in my jeans with a piece of fabric?",a:"patch",o:["patch", "restore", "renovate", "perform"],x:"patch = ნაჭრით დაკერება"},
+  {id:"v3_24",s:"This old leather sofa looks new again; we had it ___ by a specialist.",a:"restored",o:["restored", "patched", "renovated", "rehearsed"],x:"restore = პირვანდელ მდგომარეობაში დაბრუნება"},
+  {id:"v3_25",s:"They spent a year ___ the old farmhouse.",a:"renovating",o:["renovating", "patching", "mending", "rehearsing"],x:"renovate — შენობის რემონტი"},
+  {id:"v3_26",s:"Can you ___ my bike? The chain is broken.",a:"mend",o:["mend", "renovate", "restore", "patch"],x:"mend = შეკეთება"},
+  {id:"v3_27",s:"Clothes production has a huge ___ on the environment.",a:"impact",o:["impact", "impression", "outcome", "conclusion"],x:"impact on = ზემოქმედება"},
+  {id:"v3_28",s:"She made a good ___ on everyone at the interview.",a:"impression",o:["impression", "effect", "influence", "outcome"],x:"make an impression = შთაბეჭდილების მოხდენა"},
+  {id:"v3_29",s:"His parents had a strong ___ on his choice of career.",a:"influence",o:["influence", "impression", "outcome", "conclusion"],x:"influence = გავლენა"},
+  {id:"v3_30",s:"We are still waiting for the ___ of the election.",a:"outcome",o:["outcome", "consequence", "conclusion", "decision"],x:"outcome = საბოლოო შედეგი"},
+  {id:"v3_31",s:"If you don't study, you'll have to face the ___.",a:"consequences",o:["consequences", "outcomes", "conclusions", "impressions"],x:"consequences — (უარყოფითი) შედეგები"},
+  {id:"v3_32",s:"After thinking about it for weeks, I came to the ___ that I needed a new job.",a:"conclusion",o:["conclusion", "outcome", "consequence", "impression"],x:"come to the conclusion = დასკვნამდე მისვლა"},
+  {id:"v3_33",s:"Have you made a ___ about which university to go to?",a:"decision",o:["decision", "conclusion", "outcome", "consequence"],x:"make a decision"},
+  {id:"v3_34",s:"She was wearing ___ jeans that fit tightly around her legs.",a:"skinny",o:["skinny", "baggy", "pleated", "slip-on"],x:"skinny jeans"},
+  {id:"v3_35",s:"Her ___ skirt had lots of narrow folds.",a:"pleated",o:["pleated", "skinny", "faded", "slip-on"],x:"pleated skirt = პლისირებული ქვედაბოლო"},
+  {id:"v3_36",s:"___ shoes are easy to put on because they have no laces.",a:"Slip-on",o:["Slip-on", "Ankle", "Retro", "Pleated"],x:"slip-on shoes"},
+  {id:"v3_37",s:"He wore a pair of ___ blue jeans that had lost most of their colour.",a:"faded",o:["faded", "skinny", "pleated", "baggy"],x:"faded = გაცრეცილი"},
+  {id:"v3_38",s:"I bought a ___ belt to go with my new handbag.",a:"matching",o:["matching", "faded", "pleated", "rolled-up"],x:"matching = შეხამებული"},
+  {id:"v3_39",s:"She came to work with ___ sleeves, ready to start cleaning.",a:"rolled-up",o:["rolled-up", "faded", "pleated", "slip-on"],x:"rolled-up sleeves = აკეცილი სახელოები"},
+  {id:"v3_40",s:"___ trainers look like the ones people wore in the 1980s.",a:"Retro",o:["Retro", "Faded", "Skinny", "Tie-dye"],x:"retro = ძველებური სტილის"},
+  {id:"v3_41",s:"Many young people buy ___ clothing because it is made by famous designers.",a:"designer",o:["designer", "fast", "second-hand", "casual"],x:"designer clothing"}
+],
+pv:[
+  {id:"pv_01",s:"Don't give ___! You're almost at the finish line.",a:"up",o:["up", "out", "off", "in"],x:"give up = დანებება"},
+  {id:"pv_02",s:"The teacher gave ___ the exam papers to the students.",a:"out",o:["out", "up", "in", "on"],x:"give out = დარიგება"},
+  {id:"pv_03",s:"I know things are hard right now, but hang ___ there!",a:"in",o:["in", "out", "up", "off"],x:"hang in = გაძლება, არდანებება"},
+  {id:"pv_04",s:"Teenagers love to hang ___ at the shopping centre.",a:"out",o:["out", "in", "up", "off"],x:"hang out = დროის გატარება"},
+  {id:"pv_05",s:"If you keep ___ trying, you will succeed in the end.",a:"on",o:["on", "up", "off", "out"],x:"keep on + -ing = გაგრძელება"},
+  {id:"pv_06",s:"You're doing really well — keep it ___!",a:"up",o:["up", "on", "out", "in"],x:"keep (sth) up = კარგის კეთების გაგრძელება"},
+  {id:"pv_07",s:"Our coach started us ___ with some easy exercises.",a:"off",o:["off", "on", "up", "out"],x:"start sb off = დაწყებაში დახმარება"},
+  {id:"pv_08",s:"I'll start ___ my homework after dinner.",a:"on",o:["on", "off", "up", "out"],x:"start on sth = რაიმეს შეუდგე"},
+  {id:"pv_09",s:"The article stirred ___ a lot of anger among readers.",a:"up",o:["up", "in", "on", "out"],x:"stir up = გამოიწვია"},
+  {id:"pv_10",s:"Stir ___ the sugar and serve the coffee hot.",a:"in",o:["in", "up", "on", "out"],x:"stir in = შერევა"},
+  {id:"pv_11",s:"You need to work ___ your pronunciation.",a:"on",o:["on", "out", "up", "off"],x:"work on = გასაუმჯობესებლად მუშაობა"},
+  {id:"pv_12",s:"She works ___ at the gym three times a week.",a:"out",o:["out", "on", "up", "off"],x:"work out = ვარჯიში"},
+  {id:"pv_13",s:"We need to work ___ a plan before we start.",a:"out",o:["out", "on", "up", "in"],x:"work out a plan = გეგმის შედგენა"},
+  {id:"pv_14",s:"The astronomer pointed ___ the constellation of Orion.",a:"out",o:["out", "up", "on", "off"],x:"point out = მიუთითა, აჩვენა"},
+  {id:"pv_15",s:"We watched the rocket blast ___ from the launch pad.",a:"off",o:["off", "out", "up", "away"],x:"blast off = აფრინდა (რაკეტა)"},
+  {id:"pv_16",s:"Music was blasting ___ from the open windows.",a:"out",o:["out", "off", "up", "away"],x:"blast out = ხმამაღლა გაისმა"},
+  {id:"pv_17",s:"Rotting fruit gives ___ a strong smell.",a:"off",o:["off", "away", "up", "in"],x:"give off = გამოყოფს (სუნს, სითბოს)"},
+  {id:"pv_18",s:"She gave ___ all her old clothes to charity.",a:"away",o:["away", "off", "up", "in"],x:"give away = აჩუქა, გასცა"},
+  {id:"pv_19",s:"We narrowed ___ the list of possible names to three.",a:"down",o:["down", "up", "out", "off"],x:"narrow down = არჩევანის შემცირება"},
+  {id:"pv_20",s:"The room heats ___ very quickly in the afternoon sun.",a:"up",o:["up", "through", "out", "off"],x:"heat up = ძალიან გაცხელდა"},
+  {id:"pv_21",s:"Can I try ___ these jeans? Where are the changing rooms?",a:"on",o:["on", "out", "up", "in"],x:"try on = მოზომება"},
+  {id:"pv_22",s:"I'd like to try ___ the new camera before I buy it.",a:"out",o:["out", "on", "up", "in"],x:"try out = გამოცდა"},
+  {id:"pv_23",s:"These trousers are too big around the waist; I need to have them taken ___.",a:"in",o:["in", "off", "up", "out"],x:"take in = დავიწროება"},
+  {id:"pv_24",s:"Take ___ your shoes before you come in.",a:"off",o:["off", "in", "out", "up"],x:"take off = გახდა"},
+  {id:"pv_25",s:"I've walked so much that my trainers are completely worn ___.",a:"out",o:["out", "away", "off", "down"],x:"worn out = გაცვეთილი"},
+  {id:"pv_26",s:"Over the centuries, the sea has slowly worn ___ the rocks.",a:"away",o:["away", "out", "off", "up"],x:"wear away = თანდათან ჩაცვეთა"},
+  {id:"pv_27",s:"Button ___ your coat; it's freezing!",a:"up",o:["up", "down", "in", "out"],x:"button up = ღილების შეკვრა"},
+  {id:"pv_28",s:"He wore a shirt with a button-___ collar.",a:"down",o:["down", "up", "in", "out"],x:"button-down collar — საყელო ღილებით დამაგრებული"},
+  {id:"pv_29",s:"Hang ___ your coat in the hall.",a:"up",o:["up", "out", "in", "off"],x:"hang up = ჩამოკიდება"},
+  {id:"pv_30",s:"I'm just going to scroll ___ my messages before the meeting.",a:"through",o:["through", "out", "off", "up"],x:"scroll through (SB 3c)"}
+],
+pr:[
+  {id:"pr_01",s:"Claire put her career ___ hold when she had her first baby.",a:"on",o:["on", "in", "at", "under"],x:"put sth on hold"},
+  {id:"pr_02",s:"There's no point ___ worrying about things you can't change.",a:"in",o:["in", "of", "at", "for"],x:"there's no point in + -ing"},
+  {id:"pr_03",s:"Sometimes the difference ___ winning and losing is just one second.",a:"between",o:["between", "of", "among", "from"],x:"the difference between"},
+  {id:"pr_04",s:"Don't think about what you can't do — focus ___ what you can do.",a:"on",o:["on", "at", "in", "to"],x:"focus on"},
+  {id:"pr_05",s:"If you want to succeed, always reach ___ the stars!",a:"for",o:["for", "to", "at", "on"],x:"reach for the stars"},
+  {id:"pr_06",s:"The Hubble telescope has been ___ orbit since 1990.",a:"in",o:["in", "on", "at", "into"],x:"in orbit"},
+  {id:"pr_07",s:"A ship appeared ___ the horizon.",a:"on",o:["on", "in", "at", "into"],x:"on the horizon"},
+  {id:"pr_08",s:"Is there life ___ other planets?",a:"on",o:["on", "in", "at", "over"],x:"life on Earth / on other planets"},
+  {id:"pr_09",s:"Voyager 1 has travelled ___ the Solar System into deep space.",a:"beyond",o:["beyond", "among", "between", "under"],x:"beyond = მიღმა"},
+  {id:"pr_10",s:"Can you say the whole poem ___ heart?",a:"by",o:["by", "from", "with", "in"],x:"by heart = ზეპირად"},
+  {id:"pr_11",s:"We could see thousands of stars ___ the night sky.",a:"in",o:["in", "on", "at", "over"],x:"in the sky"},
+  {id:"pr_12",s:"This jumper is made ___ organic wool.",a:"of",o:["of", "by", "with", "in"],x:"made of"},
+  {id:"pr_13",s:"You can't just turn your back ___ the people who need help.",a:"on",o:["on", "to", "from", "against"],x:"turn your back on"},
+  {id:"pr_14",s:"She has a real passion ___ vintage fashion.",a:"for",o:["for", "of", "about", "to"],x:"a passion for"},
+  {id:"pr_15",s:"He is dedicated ___ helping young designers.",a:"to",o:["to", "for", "in", "on"],x:"dedicated to + -ing"},
+  {id:"pr_16",s:"Clothes production has a big impact ___ the environment.",a:"on",o:["on", "to", "in", "for"],x:"impact on"},
+  {id:"pr_17",s:"Take everything ___ consideration before you decide.",a:"into",o:["into", "in", "under", "with"],x:"take into consideration"},
+  {id:"pr_18",s:"She lives life ___ her own terms.",a:"on",o:["on", "in", "by", "under"],x:"on my own terms"},
+  {id:"pr_19",s:"After many years, the criminals were brought ___ justice.",a:"to",o:["to", "into", "for", "under"],x:"bring sb to justice"},
+  {id:"pr_20",s:"She pleaded ___ the judge to let her son go.",a:"with",o:["with", "to", "for", "at"],x:"plead with sb"},
+  {id:"pr_21",s:"Our whole life seems to revolve ___ our children.",a:"around",o:["around", "about", "on", "over"],x:"revolve around"},
+  {id:"pr_22",s:"He felt justified ___ asking for a pay rise.",a:"in",o:["in", "for", "of", "to"],x:"justified in + -ing"},
+  {id:"pr_23",s:"She was nominated ___ the Best Designer award.",a:"for",o:["for", "to", "at", "on"],x:"nominate sb for sth"},
+  {id:"pr_24",s:"Is this jacket ___ stock in a larger size?",a:"in",o:["in", "on", "at", "of"],x:"in stock"},
+  {id:"pr_25",s:"Long skirts are back ___ fashion this year.",a:"in",o:["in", "on", "at", "into"],x:"in fashion"},
+  {id:"pr_26",s:"She is capable ___ running the company on her own.",a:"of",o:["of", "for", "in", "at"],x:"capable of + -ing"},
+  {id:"pr_27",s:"He's very attached ___ his old leather jacket.",a:"to",o:["to", "with", "on", "at"],x:"attached to"},
+  {id:"pr_28",s:"The witch cast a spell ___ the princess.",a:"on",o:["on", "to", "at", "in"],x:"cast a spell on"},
+  {id:"pr_29",s:"She succeeded ___ convincing her parents.",a:"in",o:["in", "on", "of", "for"],x:"succeed in + -ing"},
+  {id:"pr_30",s:"The audience roared ___ laughter.",a:"with",o:["with", "in", "of", "at"],x:"roar with laughter"},
+  {id:"pr_31",s:"Who should get the credit ___ this discovery?",a:"for",o:["for", "of", "on", "at"],x:"credit for"}
+],
+idm:[
+  {id:"idm_01",s:"Nothing can upset Tom; he's as cool as a ___.",a:"cucumber",o:["cucumber", "fox", "mustard", "brass"],x:"as cool as a cucumber = სრულიად მშვიდი"},
+  {id:"idm_02",s:"He's as sly as a ___; he always finds a clever way to get what he wants.",a:"fox",o:["fox", "cucumber", "mustard", "nail"],x:"as sly as a fox = ცბიერი"},
+  {id:"idm_03",s:"She's as keen as ___ and always volunteers first.",a:"mustard",o:["mustard", "brass", "ice", "nails"],x:"as keen as mustard = ენთუზიაზმით სავსე"},
+  {id:"idm_04",s:"He walked in late, as bold as ___, and didn't even apologise.",a:"brass",o:["brass", "ice", "mustard", "a fox"],x:"as bold as brass = თავხედი"},
+  {id:"idm_05",s:"The new boss is as hard as ___; she never shows any sympathy.",a:"nails",o:["nails", "brass", "mustard", "a cucumber"],x:"as hard as nails = მკაცრი, დაუნდობელი"},
+  {id:"idm_06",s:"She didn't even look at me; she was as cold as ___.",a:"ice",o:["ice", "nails", "brass", "a fox"],x:"as cold as ice = ცივი, გულგრილი"},
+  {id:"idm_07",s:"___ and shine! It's time to get up.",a:"Rise",o:["Rise", "Rain", "Wake", "Get"],x:"Rise and shine! = ადექი!"},
+  {id:"idm_08",s:"The festival will take place, rain or ___.",a:"shine",o:["shine", "sun", "snow", "storm"],x:"rain or shine = ნებისმიერ ამინდში"},
+  {id:"idm_09",s:"You're young and healthy, so make ___ while the sun shines.",a:"hay",o:["hay", "money", "bread", "grass"],x:"make hay while the sun shines = ხელსაყრელი მომენტის გამოყენება"},
+  {id:"idm_10",s:"When my car broke down, a stranger stopped to help — a real knight in shining ___.",a:"armour",o:["armour", "sword", "suit", "horse"],x:"a knight in shining armour = მხსნელი"},
+  {id:"idm_11",s:"My grandmother took a ___ to my new boyfriend straight away.",a:"shine",o:["shine", "glow", "light", "spark"],x:"take a shine to sb = მოეწონა"},
+  {id:"idm_12",s:"As soon as he gets paid, he spends it all; money burns a ___ in his pocket.",a:"hole",o:["hole", "fire", "mark", "bag"],x:"money burns a hole in your pocket"},
+  {id:"idm_13",s:"Since I lost my job, I've had to tighten my ___.",a:"belt",o:["belt", "sleeves", "pocket", "shoestring"],x:"tighten your belt = ხარჯების შემცირება"},
+  {id:"idm_14",s:"They started the business on a ___, with almost no money.",a:"shoestring",o:["shoestring", "belt", "pocket", "sleeve"],x:"on a shoestring = მცირე ბიუჯეტით"},
+  {id:"idm_15",s:"There's a lot of work to do, so let's roll up our ___ and get started.",a:"sleeves",o:["sleeves", "trousers", "belts", "collars"],x:"roll up your sleeves = საქმეს სერიოზულად შეუდგე"},
+  {id:"idm_16",s:"He keeps saying he'll start his own company, but he's all mouth and no ___.",a:"trousers",o:["trousers", "sleeves", "shoes", "hats"],x:"all mouth and no trousers = ბევრს ლაპარაკობს, არაფერს აკეთებს"},
+  {id:"idm_17",s:"He came to his father, hat in ___, to ask for money.",a:"hand",o:["hand", "head", "pocket", "arm"],x:"(with) hat in hand = თავმდაბლად, თხოვნით"},
+  {id:"idm_18",s:"I've got an exam next week, so I really need to hit the ___.",a:"books",o:["books", "road", "notes", "desk"],x:"hit the books = გულმოდგინედ სწავლა (hit the road = წასვლა)"},
+  {id:"idm_19",s:"Never judge a book by its ___.",a:"cover",o:["cover", "title", "pages", "price"],x:"გარეგნობით ნუ განსჯი"},
+  {id:"idm_20",s:"I'm not sure I can do it, but I'll give it a ___.",a:"shot",o:["shot", "hit", "kick", "push"],x:"give sth a shot = ცდა"},
+  {id:"idm_21",s:"Keep going and you'll succeed — you're on the right ___.",a:"track",o:["track", "rail", "line", "lane"],x:"be on the right track"},
+  {id:"idm_22",s:"Work hard and your dreams will come ___.",a:"true",o:["true", "real", "right", "alive"],x:"dreams come true"},
+  {id:"idm_23",s:"I'd like to buy that car, but I'm having second ___ about the price.",a:"thoughts",o:["thoughts", "minds", "ideas", "doubts"],x:"have second thoughts = გადაფიქრება"},
+  {id:"idm_24",s:"Being chosen as a goodwill ___ by the UN was a great honour for her.",a:"ambassador",o:["ambassador", "speaker", "guardian", "warrior"],x:"goodwill ambassador (WL 1b)"}
+],
+wf:[
+  {id:"wf_01",s:"She spoke with such ___ that everyone believed her.",a:"confidence",o:["confidence", "confident", "confidently", "confide"],x:"confident → confidence (არსებითი)"},
+  {id:"wf_02",s:"Her ___ laugh made everyone smile.",a:"infectious",o:["infectious", "infected", "infection", "infecting"],x:"infect → infectious"},
+  {id:"wf_03",s:"The children were ___ and ran straight into the dark cave.",a:"fearless",o:["fearless", "fearful", "fearsome", "fears"],x:"fear → fearless"},
+  {id:"wf_04",s:"Many ___ now prefer clothes made from organic cotton.",a:"consumers",o:["consumers", "consumption", "consuming", "consumes"],x:"consume → consumers"},
+  {id:"wf_05",s:"He was ___ after climbing to the top of the hill.",a:"breathless",o:["breathless", "breathing", "breathe", "breath"],x:"breath → breathless"},
+  {id:"wf_06",s:"Few people are ___ to pay more for ethical clothing.",a:"willing",o:["willing", "willed", "willingly", "willingness"],x:"will → willing (to)"},
+  {id:"wf_07",s:"The ___ on his face was obvious when he lost the final.",a:"disappointment",o:["disappointment", "disappointing", "disappointed", "disappoint"],x:"disappoint → disappointment"},
+  {id:"wf_08",s:"Prices of designer clothes keep rising ___.",a:"constantly",o:["constantly", "constant", "constancy", "constants"],x:"constant → constantly"},
+  {id:"wf_09",s:"Despite his ___, Nick lives a full and happy life.",a:"disability",o:["disability", "inability", "unable", "ability"],x:"able → disability"},
+  {id:"wf_10",s:"She trained ___ hard and never missed a session.",a:"consistently",o:["consistently", "consistent", "consistency", "consist"],x:"consist → consistently"},
+  {id:"wf_11",s:"Winning the ___ was the best moment of her life.",a:"competition",o:["competition", "competitive", "compete", "competing"],x:"compete → competition"},
+  {id:"wf_12",s:"He had great ___ learning to walk again after the accident.",a:"difficulty",o:["difficulty", "difficult", "differ", "difficultly"],x:"difficult → difficulty"},
+  {id:"wf_13",s:"She is ___ to what other people think of her.",a:"indifferent",o:["indifferent", "different", "differ", "difference"],x:"differ → indifferent"},
+  {id:"wf_14",s:"You need to be more ___ in meetings; say what you think!",a:"assertive",o:["assertive", "assert", "assertion", "assertively"],x:"assert → assertive"},
+  {id:"wf_15",s:"Living on your own can make you feel ___ at first.",a:"insecure",o:["insecure", "security", "securely", "insecurity"],x:"secure → insecure"},
+  {id:"wf_16",s:"It was very ___ of you to remember my birthday.",a:"thoughtful",o:["thoughtful", "thinking", "thoughtless", "thought"],x:"think → thoughtful"},
+  {id:"wf_17",s:"We watched the ___ stars in the night sky.",a:"glittering",o:["glittering", "glitter", "glittered", "glitters"],x:"glitter → glittering"},
+  {id:"wf_18",s:"The dragon in the story is completely ___.",a:"imaginary",o:["imaginary", "imagination", "imagine", "imaginatively"],x:"imagine → imaginary"},
+  {id:"wf_19",s:"He was born into a ___ family and never had to work.",a:"wealthy",o:["wealthy", "wealth", "wealthily", "wealthiness"],x:"wealth → wealthy"},
+  {id:"wf_20",s:"The room was filled with ___ when he told the joke.",a:"laughter",o:["laughter", "laugh", "laughable", "laughs"],x:"laugh → laughter"},
+  {id:"wf_21",s:"Online shopping is very popular with ___, who grew up with the internet.",a:"millennials",o:["millennials", "millennium", "millennia", "millennial"],x:"millennium → millennials"},
+  {id:"wf_22",s:"The new store was ___ opened by the mayor.",a:"officially",o:["officially", "official", "officials", "office"],x:"official → officially"},
+  {id:"wf_23",s:"The designer is always ___ herself with new styles.",a:"reinventing",o:["reinventing", "invention", "inventor", "inventive"],x:"invent → reinventing"},
+  {id:"wf_24",s:"Fashion is ___ linked to the way we see ourselves.",a:"intrinsically",o:["intrinsically", "intrinsic", "inherent", "inherence"],x:"intrinsic → intrinsically"},
+  {id:"wf_25",s:"This jacket is ___ than the other one, so I'll buy it.",a:"cosier",o:["cosier", "cosy", "cosiest", "cosily"],x:"cosy → cosier"},
+  {id:"wf_26",s:"She ___ asked for her money back.",a:"insistently",o:["insistently", "insistent", "insistence", "insist"],x:"insist → insistently"},
+  {id:"wf_27",s:"In my country it's ___ for men to wear a suit at weddings.",a:"customary",o:["customary", "custom", "customer", "customs"],x:"custom → customary"},
+  {id:"wf_28",s:"That horror film was really ___.",a:"scary",o:["scary", "scared", "scare", "scarily"],x:"scare → scary"},
+  {id:"wf_29",s:"It was raining ___ all night.",a:"heavily",o:["heavily", "heavy", "heaviness", "heavier"],x:"heavy → heavily"},
+  {id:"wf_30",s:"My grandfather was a man of great ___.",a:"wisdom",o:["wisdom", "wise", "wisely", "wiser"],x:"wise → wisdom"},
+  {id:"wf_31",s:"Many clothes are made in ___ economies in Asia.",a:"emerging",o:["emerging", "emergency", "emergence", "emerges"],x:"emerge → emerging"},
+  {id:"wf_32",s:"Famous fashion ___ showed their new collections in Paris.",a:"designers",o:["designers", "designs", "designing", "designed"],x:"design → designers"},
+  {id:"wf_33",s:"Cheap ___ is often made in poor conditions.",a:"clothing",o:["clothing", "clothes", "clothe", "clothed"],x:"clothes → clothing (უთვლადი, ამიტომ is)"},
+  {id:"wf_34",s:"It was a ___ sunny day, perfect for the beach.",a:"glorious",o:["glorious", "glory", "gloriously", "glorify"],x:"glory → glorious"},
+  {id:"wf_35",s:"He's a brave ___ who never gives up.",a:"fighter",o:["fighter", "fight", "fighting", "fought"],x:"fight → fighter"},
+  {id:"wf_36",s:"A ___ came through the window and lit up the room.",a:"sunbeam",o:["sunbeam", "sunny", "sunlit", "sunshiny"],x:"sun → sunbeam"},
+  {id:"wf_37",s:"We looked up at the ___ moon.",a:"shining",o:["shining", "shine", "shone", "shines"],x:"shine → shining"},
+  {id:"wf_38",s:"Spending too much time online can ___ your ability to concentrate.",a:"weaken",o:["weaken", "weak", "weakness", "weakly"],x:"weak → weaken"},
+  {id:"wf_39",s:"He ___ arrives at work at 8 o'clock.",a:"usually",o:["usually", "usual", "unusual", "usualness"],x:"usual → usually"},
+  {id:"wf_40",s:"Our ___ explained how stars are born.",a:"professors",o:["professors", "professions", "professing", "professed"],x:"profess → professors"}
+],
+tn:[
+  {id:"tn_01",s:"Look! It ___ outside.",a:"is snowing",o:["is snowing", "snows", "snow", "was snowing"],x:"ახლა მიმდინარე → present continuous"},
+  {id:"tn_02",s:"Water ___ at 100 degrees Celsius.",a:"boils",o:["boils", "is boiling", "has boiled", "boiled"],x:"ზოგადი ჭეშმარიტება → present simple"},
+  {id:"tn_03",s:"The train to London ___ at 9.15 tomorrow morning.",a:"leaves",o:["leaves", "has left", "left", "had left"],x:"განრიგი → present simple მომავლის მნიშვნელობით"},
+  {id:"tn_04",s:"I ___ my grandmother since she moved to Spain.",a:"haven't seen",o:["haven't seen", "didn't see", "don't see", "hadn't seen"],x:"since + წარსული მომენტი → present perfect"},
+  {id:"tn_05",s:"They ___ each other for over twenty years.",a:"have known",o:["have known", "have been knowing", "know", "are knowing"],x:"know stative-ია → present perfect simple"},
+  {id:"tn_06",s:"Oliver is exhausted; he ___ his speech all night.",a:"has been preparing",o:["has been preparing", "prepares", "is preparing", "will prepare"],x:"ხანგრძლივობა, შედეგი ახლა ჩანს → present perfect continuous"},
+  {id:"tn_07",s:"Frances isn't here; she ___ to the library.",a:"has gone",o:["has gone", "has been", "had gone", "goes"],x:"has gone to = წავიდა, ჯერ არ დაბრუნებულა; has been to = იყო და დაბრუნდა"},
+  {id:"tn_08",s:"I ___ to Paris three times, and I'd love to go again.",a:"have been",o:["have been", "have gone", "had gone", "am"],x:"have been to = იყო და დაბრუნდა"},
+  {id:"tn_09",s:"This soup ___ delicious! What's in it?",a:"tastes",o:["tastes", "is tasting", "has tasted", "has been tasting"],x:"taste = გემო აქვს (stative) → simple"},
+  {id:"tn_10",s:"Joanne ___ of giving a talk at the conference.",a:"is thinking",o:["is thinking", "thinks", "think", "has thought"],x:"think of = განიხილავს → continuous"},
+  {id:"tn_11",s:"I ___ you've bought a new car!",a:"see",o:["see", "am seeing", "have been seeing", "sees"],x:"see = ვხედავ (stative); am seeing = ვხვდები"},
+  {id:"tn_12",s:"She ___ a life coach at the moment to help her with her career.",a:"is seeing",o:["is seeing", "sees", "has seen", "saw"],x:"see = ხვდება (მოქმედება) + at the moment → continuous"},
+  {id:"tn_13",s:"Simon ___ really rude today; it's not like him.",a:"is being",o:["is being", "being", "be", "is been"],x:"is being = დროებითი ქცევა"},
+  {id:"tn_14",s:"This jacket ___ really soft.",a:"feels",o:["feels", "is feeling", "has felt", "feel"],x:"feel = შეხებით ასეთია (stative)"},
+  {id:"tn_15",s:"Ben can't come to the phone; he ___ a meeting.",a:"is having",o:["is having", "has", "has had", "had"],x:"have a meeting = ესწრება (მოქმედება) → continuous"},
+  {id:"tn_16",s:"Hugh ___ an email when his phone rang, so he didn't finish it.",a:"was writing",o:["was writing", "wrote", "had written", "has written"],x:"შეწყვეტილი მიმდინარე მოქმედება → past continuous"},
+  {id:"tn_17",s:"By the time she was 21, Jane ___ three awards.",a:"had won",o:["had won", "won", "has won", "was winning"],x:"by the time + წარსული → past perfect"},
+  {id:"tn_18",s:"Monica was sleepy because she ___ all evening.",a:"had been working",o:["had been working", "has been working", "works", "is working"],x:"ხანგრძლივობა წარსულ მომენტამდე → past perfect continuous"},
+  {id:"tn_19",s:"John ___ for a month when he decided to change course.",a:"had been studying",o:["had been studying", "has been studying", "studies", "is studying"],x:"ხანგრძლივობა სხვა წარსულ მოქმედებამდე → past perfect continuous"},
+  {id:"tn_20",s:"She took out her laptop and ___ taking notes.",a:"started",o:["started", "had started", "was starting", "has started"],x:"მიყოლებით მომხდარი მოქმედებები → past simple"},
+  {id:"tn_21",s:"At 7 pm last Friday, we ___ dinner with friends.",a:"were having",o:["were having", "have had", "are having", "have"],x:"კონკრეტულ წარსულ მომენტში მიმდინარე → past continuous"},
+  {id:"tn_22",s:"While I ___ the dishes, my brother was watching TV.",a:"was doing",o:["was doing", "do", "had done", "have done"],x:"ერთდროული ხანგრძლივი მოქმედებები (while) → past continuous"},
+  {id:"tn_23",s:"Mark usually ___ at work early.",a:"arrives",o:["arrives", "is arriving", "has arrived", "arrive"],x:"ჩვევა (usually) → present simple"},
+  {id:"tn_24",s:"More and more young people ___ not to follow traditional careers these days.",a:"are choosing",o:["are choosing", "chose", "had chosen", "were choosing"],x:"ცვალებადი სიტუაცია (more and more, these days) → present continuous"},
+  {id:"tn_25",s:"It's the first time I ___ an award.",a:"have received",o:["have received", "received", "receive", "am receiving"],x:"It's the first time + present perfect"},
+  {id:"tn_26",s:"Ian ___ his new job; he's only been there a day.",a:"has just started",o:["has just started", "just starts", "had just started", "is just starting"],x:"just → present perfect"},
+  {id:"tn_27",s:"Tim ___ in London for six months now; he loves living there.",a:"has been",o:["has been", "has gone", "is", "was"],x:"has been in = იქ ცხოვრობს"},
+  {id:"tn_28",s:"I ___ my keys. Can you help me look for them?",a:"have lost",o:["have lost", "had lost", "am losing", "lose"],x:"შედეგი ახლაა მნიშვნელოვანი → present perfect"},
+  {id:"tn_29",s:"We ___ a workshop this weekend; do you want to come?",a:"are attending",o:["are attending", "attend", "have attended", "attended"],x:"ახლო მომავლის შეთანხმება → present continuous"},
+  {id:"tn_30",s:"Sarah ___ fashion since she was a teenager.",a:"has always loved",o:["has always loved", "has always been loving", "always loves", "is always loving"],x:"since → perfect; love stative-ია, continuous არა"},
+  {id:"tn_31",s:"Bill is tired. He ___ his presentation for hours.",a:"has been preparing",o:["has been preparing", "prepares", "had prepared", "is prepared"],x:"შედეგი ახლა ჩანს → present perfect continuous"},
+  {id:"tn_32",s:"They ___ two ceremonies so far this year.",a:"have attended",o:["have attended", "attended", "attend", "had attended"],x:"so far, this year → present perfect"},
+  {id:"tn_33",s:"Before she became a writer, she ___ as a teacher for ten years.",a:"had worked",o:["had worked", "has worked", "works", "is working"],x:"სხვა წარსულ მოქმედებამდე → past perfect"},
+  {id:"tn_34",s:"Who ___ my laptop? It's covered in crumbs!",a:"has been using",o:["has been using", "uses", "is used", "had used"],x:"გაღიზიანება + კვალი ჩანს → present perfect continuous"},
+  {id:"tn_35",s:"Laurence ___ late for work.",a:"is never",o:["is never", "never is", "never", "is ever"],x:"სიხშირის ზმნიზედა be-ს შემდეგ: is never"},
+  {id:"tn_36",s:"I ___ met such a talented person.",a:"have rarely",o:["have rarely", "rarely have", "have rare", "rare have"],x:"სიხშირის ზმნიზედა დამხმარე ზმნის შემდეგ: have rarely"}
+],
+ub:[
+  {id:"ub_01",s:"When I was a child, my grandfather ___ me stories about the stars every night.",a:"would tell",o:["would tell", "was used to tell", "got used to telling", "would be telling"],x:"would + V = წარსული განმეორებადი მოქმედება"},
+  {id:"ub_02",s:"My neighbour ___ a teacher, but now she's retired.",a:"used to be",o:["used to be", "would be", "was used to being", "got used to being"],x:"წარსული მდგომარეობა → used to; would მდგომარეობაზე არ იხმარება"},
+  {id:"ub_03",s:"Moving to London was hard at first, but I soon ___ the noise.",a:"got used to",o:["got used to", "used to", "was used to", "would"],x:"get used to = შევეჩვიე (პროცესი)"},
+  {id:"ub_04",s:"Marsha isn't used to ___ up early.",a:"waking",o:["waking", "wake", "woke", "have woken"],x:"be used to + -ing"},
+  {id:"ub_05",s:"___ you use to play football at school?",a:"Did",o:["Did", "Were", "Had", "Would"],x:"Did you use to…? (use, არა used)"},
+  {id:"ub_06",s:"I didn't ___ like vegetables, but now I love them.",a:"use to",o:["use to", "used to", "using to", "be used to"],x:"didn't use to (არა didn't used to)"},
+  {id:"ub_07",s:"You'll soon get used to ___ with difficult clients.",a:"dealing",o:["dealing", "deal", "dealt", "have dealt"],x:"get used to + -ing"},
+  {id:"ub_08",s:"I'm a nurse, so I ___ working at night.",a:"am used to",o:["am used to", "used to", "would", "use to"],x:"be used to + -ing = შეჩვეული ვარ"},
+  {id:"ub_09",s:"After a few weeks in London, she ___ driving on the left.",a:"got used to",o:["got used to", "used to", "would", "is used to"],x:"get used to (პროცესი) → past simple"},
+  {id:"ub_10",s:"The concert ___ an hour ago.",a:"began",o:["began", "used to begin", "would begin", "was used to beginning"],x:"ერთჯერადი მოქმედება განსაზღვრულ დროს → past simple"},
+  {id:"ub_11",s:"We ___ in a small village, but we moved to the city when I was ten.",a:"used to live",o:["used to live", "would live", "got used to live", "use to live"],x:"live მდგომარეობაა → used to; would არა"},
+  {id:"ub_12",s:"Every summer, we ___ go camping by the lake.",a:"would",o:["would", "were used to", "got used to", "use to"],x:"would + V = განმეორებადი მოქმედება"},
+  {id:"ub_13",s:"He ___ have long hair when he was at university.",a:"used to",o:["used to", "would", "was used to", "got used to"],x:"have long hair მდგომარეობაა → used to"},
+  {id:"ub_14",s:"Has Ian ___ to dealing with customers yet?",a:"got used",o:["got used", "used", "been use", "get used"],x:"Has … got used to + -ing?"},
+  {id:"ub_15",s:"Did your family ___ go on holiday abroad when you were young?",a:"use to",o:["use to", "used to", "got used to", "be used to"],x:"Did … use to + V?"}
+],
+ig:[
+  {id:"ig_01",s:"It's no use ___ about it now; the tickets are sold out.",a:"complaining",o:["complaining", "complain", "to complain", "to have complained"],x:"It's no use + -ing"},
+  {id:"ig_02",s:"My parents never let me ___ up late on school nights.",a:"stay",o:["stay", "to stay", "staying", "stayed"],x:"let + ობიექტი + V (to-ს გარეშე)"},
+  {id:"ig_03",s:"I regret ___ you that your flight has been cancelled.",a:"to inform",o:["to inform", "informing", "to have informed", "inform"],x:"regret to inform = სამწუხაროდ გაცნობებთ"},
+  {id:"ig_04",s:"Paul stopped ___ at the full moon, then continued walking.",a:"to look",o:["to look", "looking", "look", "to looking"],x:"stop to + V = შეჩერდა, რომ შეეხედა"},
+  {id:"ig_05",s:"She seems ___ very hard lately; she looks exhausted.",a:"to have been working",o:["to have been working", "to work", "to be worked", "working"],x:"ხანგრძლივობა ახლამდე → perfect continuous ინფინიტივი"},
+  {id:"ig_06",s:"Anna downloaded an app ___ about constellations.",a:"to read",o:["to read", "reading", "read", "to reading"],x:"მიზანი → to-infinitive"},
+  {id:"ig_07",s:"Jordan would like ___ an astronaut one day.",a:"to meet",o:["to meet", "meeting", "meet", "to meeting"],x:"would like + to-inf"},
+  {id:"ig_08",s:"It was kind of your dad ___ us a lift.",a:"to give",o:["to give", "giving", "give", "to giving"],x:"It was kind of sb + to-inf"},
+  {id:"ig_09",s:"The sun is bright enough ___ your eyes.",a:"to damage",o:["to damage", "damaging", "damage", "for damaging"],x:"adj + enough + to-inf"},
+  {id:"ig_10",s:"He waited all night, only ___ that the meteor shower had been cancelled.",a:"to find out",o:["to find out", "finding out", "find out", "to finding out"],x:"only + to-inf = მოულოდნელი შედეგი"},
+  {id:"ig_11",s:"Janet was the first student ___ her project.",a:"to present",o:["to present", "present", "presented", "to presenting"],x:"the first + to-inf"},
+  {id:"ig_12",s:"Everyone was made ___ protective glasses.",a:"to wear",o:["to wear", "wear", "wearing", "wore"],x:"პასივში make + to-inf"},
+  {id:"ig_13",s:"I heard Jake ___ that he had seen a comet.",a:"mention",o:["mention", "to mention", "mentioned", "mentions"],x:"hear + ობიექტი + V"},
+  {id:"ig_14",s:"I would rather ___ a documentary than a film tonight.",a:"watch",o:["watch", "to watch", "watching", "watched"],x:"would rather + V"},
+  {id:"ig_15",s:"We spent hours ___ at the stars.",a:"looking",o:["looking", "to look", "look", "looked"],x:"spend time + -ing"},
+  {id:"ig_16",s:"We are looking forward to ___ the space centre.",a:"visiting",o:["visiting", "visit", "have visited", "be visiting"],x:"look forward to + -ing"},
+  {id:"ig_17",s:"James forgot ___ his binoculars away, and now they are wet.",a:"to put",o:["to put", "putting", "put", "to putting"],x:"forget to = დაავიწყდა გაკეთება"},
+  {id:"ig_18",s:"I'll never forget ___ him for the first time.",a:"meeting",o:["meeting", "to meet", "meet", "to meeting"],x:"forget + -ing = არ დაავიწყდება გაკეთებული"},
+  {id:"ig_19",s:"Remember ___ a jacket; it gets cold at night.",a:"to bring",o:["to bring", "bringing", "bring", "to bringing"],x:"remember to = არ დაგავიწყდეს, რომ გააკეთო"},
+  {id:"ig_20",s:"Do you remember ___ the planetarium when we were kids?",a:"visiting",o:["visiting", "to visit", "visit", "to visiting"],x:"remember + -ing = გახსოვს, რომ გააკეთე"},
+  {id:"ig_21",s:"Josh meant ___ the launch, but he fell asleep.",a:"to watch",o:["to watch", "watching", "watch", "to watching"],x:"mean to = აპირებდა"},
+  {id:"ig_22",s:"Exploring other planets means ___ huge amounts of money.",a:"investing",o:["investing", "to invest", "invest", "to investing"],x:"mean + -ing = ნიშნავს, მოითხოვს"},
+  {id:"ig_23",s:"First she taught physics at a school; later she went on ___ for NASA.",a:"to work",o:["to work", "working", "work", "worked"],x:"go on to = შემდეგ სხვა რამეზე გადავიდა"},
+  {id:"ig_24",s:"He went on ___ even though nobody was listening.",a:"talking",o:["talking", "to talk", "talk", "talked"],x:"go on + -ing = განაგრძო"},
+  {id:"ig_25",s:"Henry helped Jack ___ the North Star.",a:"find",o:["find", "finding", "found", "to finding"],x:"help + ობიექტი + (to) V"},
+  {id:"ig_26",s:"He admitted ___ the window.",a:"breaking",o:["breaking", "to break", "break", "broke"],x:"admit + -ing"},
+  {id:"ig_27",s:"Would you mind ___ the window?",a:"opening",o:["opening", "to open", "open", "opened"],x:"mind + -ing"},
+  {id:"ig_28",s:"I can't help ___ when I see that video.",a:"laughing",o:["laughing", "to laugh", "laugh", "laughed"],x:"can't help + -ing"},
+  {id:"ig_29",s:"It's not worth ___ to the observatory tonight; it's too cloudy.",a:"going",o:["going", "to go", "go", "gone"],x:"it's (not) worth + -ing"},
+  {id:"ig_30",s:"Ann seems ___ the news already; she looks upset.",a:"to have heard",o:["to have heard", "to hear", "hearing", "to be hearing"],x:"უკვე მომხდარი → perfect ინფინიტივი"},
+  {id:"ig_31",s:"The comet is believed ___ first by Chinese astronomers.",a:"to have been seen",o:["to have been seen", "to see", "to have seen", "seeing"],x:"წარსული + პასივი → perfect passive ინფინიტივი"},
+  {id:"ig_32",s:"He hates ___ what to do.",a:"being told",o:["being told", "to tell", "telling", "be told"],x:"პასივი: hate being told"},
+  {id:"ig_33",s:"The teacher explained how ___ the North Star.",a:"to find",o:["to find", "finding", "find", "found"],x:"explain + how + to-inf"},
+  {id:"ig_34",s:"To ___ you the truth, I don't like astronomy.",a:"tell",o:["tell", "say", "speak", "talk"],x:"to tell you the truth"},
+  {id:"ig_35",s:"The children were too excited ___.",a:"to sleep",o:["to sleep", "sleeping", "sleep", "for sleeping"],x:"too + adj + to-inf"},
+  {id:"ig_36",s:"Avoid ___ directly at the sun.",a:"looking",o:["looking", "to look", "look", "looked"],x:"avoid + -ing"},
+  {id:"ig_37",s:"Brian listened to the band ___ their full set from start to finish.",a:"play",o:["play", "to play", "played", "plays"],x:"listen to + ობიექტი + V = მოქმედება მთლიანად"},
+  {id:"ig_38",s:"We stopped ___ when it started to rain.",a:"walking",o:["walking", "to walk", "walk", "walked"],x:"stop + -ing = შეწყვიტა"}
+],
+ins:[
+  {id:"ins_01",s:"The view from the top of the mountain was ___ wonderful.",a:"absolutely",o:["absolutely", "very", "extremely", "fairly"],x:"wonderful ძლიერი ზედსართავია → absolutely"},
+  {id:"ins_02",s:"The film was ___ interesting.",a:"really",o:["really", "absolutely", "utterly", "completely"],x:"interesting ჩვეულებრივია → really, very, extremely"},
+  {id:"ins_03",s:"I was ___ devastated when I heard the news.",a:"absolutely",o:["absolutely", "very", "extremely", "fairly"],x:"devastated ძლიერია → absolutely"},
+  {id:"ins_04",s:"The ant was ___ tiny.",a:"absolutely",o:["absolutely", "very", "extremely", "fairly"],x:"tiny ძლიერია → absolutely"},
+  {id:"ins_05",s:"It was a ___ cold morning, and the wind cut through our coats.",a:"bitterly",o:["bitterly", "gravely", "deeply", "highly"],x:"bitterly cold"},
+  {id:"ins_06",s:"His grandfather is ___ ill in hospital.",a:"gravely",o:["gravely", "bitterly", "deeply", "highly"],x:"gravely ill"},
+  {id:"ins_07",s:"She was ___ worried about her exam results.",a:"deeply",o:["deeply", "bitterly", "highly", "utterly"],x:"deeply worried"},
+  {id:"ins_08",s:"The team is ___ motivated to win the final.",a:"highly",o:["highly", "deeply", "bitterly", "gravely"],x:"highly motivated"},
+  {id:"ins_09",s:"Your help is ___ appreciated.",a:"greatly",o:["greatly", "bitterly", "gravely", "totally"],x:"-ly ზმნიზედა + მიმღეობა: greatly appreciated"},
+  {id:"ins_10",s:"The party was a ___ success; everyone had a great time.",a:"complete",o:["complete", "utter", "very", "highly"],x:"a complete success; utter — უარყოფით არსებითთან"},
+  {id:"ins_11",s:"The concert was a(n) ___ disappointment.",a:"utter",o:["utter", "perfect", "very", "highly"],x:"an utter disappointment (perfect disappointment არ ითქმის)"},
+  {id:"ins_12",s:"Thank you for dinner — it was a ___ treat.",a:"real",o:["real", "complete", "utter", "very"],x:"a real treat (complete treat არ ითქმის)"},
+  {id:"ins_13",s:"The young scientist is ___ talented.",a:"exceptionally",o:["exceptionally", "absolutely", "utterly", "completely"],x:"talented ჩვეულებრივია → exceptionally"},
+  {id:"ins_14",s:"The Milky Way is ___ enormous.",a:"absolutely",o:["absolutely", "very", "extremely", "slightly"],x:"enormous ძლიერია → absolutely"},
+  {id:"ins_15",s:"The test was ___ difficult; nobody finished it.",a:"extremely",o:["extremely", "absolutely", "utterly", "totally"],x:"difficult ჩვეულებრივია → extremely"},
+  {id:"ins_16",s:"Compared to Jupiter, Mars is ___ small.",a:"remarkably",o:["remarkably", "utterly", "absolutely", "totally"],x:"small ჩვეულებრივია → remarkably"},
+  {id:"ins_17",s:"She was ___ furious when she saw the mess.",a:"absolutely",o:["absolutely", "very", "extremely", "fairly"],x:"furious ძლიერია → absolutely"},
+  {id:"ins_18",s:"I ___ believe that we can make a difference.",a:"truly",o:["truly", "very", "utter", "highly"],x:"-ly ზმნიზედა + ზმნა: I truly believe"},
+  {id:"ins_19",s:"It was ___ impossible to sleep with all that noise.",a:"totally",o:["totally", "very", "extremely", "fairly"],x:"impossible ძლიერია → totally"},
+  {id:"ins_20",s:"We were ___ excited about the trip.",a:"incredibly",o:["incredibly", "absolutely", "utterly", "completely"],x:"excited ჩვეულებრივია → incredibly"},
+  {id:"ins_21",s:"The results of the experiment were ___ important.",a:"extremely",o:["extremely", "utterly", "absolutely", "totally"],x:"important ჩვეულებრივია → extremely"},
+  {id:"ins_22",s:"The sky was ___ perfect for watching the meteor shower.",a:"quite",o:["quite", "very", "extremely", "fairly"],x:"ძლიერ ზედსართავთან quite = სრულიად"}
+],
+cp:[
+  {id:"cp_01",s:"This is ___ dress I have ever bought.",a:"the least expensive",o:["the least expensive", "the less expensive", "less expensive", "the least expensively"],x:"ზედა ხარისხი: the least + adj"},
+  {id:"cp_02",s:"The more you practise, ___ you will become.",a:"the more confident",o:["the more confident", "more confident", "the most confident", "the confident"],x:"the + შედარებითი …, the + შედარებითი"},
+  {id:"cp_03",s:"These earrings are ___ unusual as those ones.",a:"as",o:["as", "so", "more", "such"],x:"as + adj + as"},
+  {id:"cp_04",s:"My new phone is ___ better than my old one.",a:"far",o:["far", "by far", "very", "most"],x:"far + შედარებითი; by far — მხოლოდ ზედა ხარისხთან"},
+  {id:"cp_05",s:"This is by ___ the most beautiful dress in the shop.",a:"far",o:["far", "much", "very", "most"],x:"by far + the + ზედა ხარისხი"},
+  {id:"cp_06",s:"I can't work any ___; I'm doing my best!",a:"faster",o:["faster", "fast", "fastest", "more fast"],x:"any + შედარებითი"},
+  {id:"cp_07",s:"Clothes here are half ___ expensive as in London.",a:"as",o:["as", "so", "more", "less"],x:"half as … as"},
+  {id:"cp_08",s:"She paid twice as ___ as I did for the same jacket.",a:"much",o:["much", "many", "more", "most"],x:"twice as much as"},
+  {id:"cp_09",s:"Dan's shirt is the same ___ Peter's.",a:"as",o:["as", "like", "than", "with"],x:"the same as"},
+  {id:"cp_10",s:"Prices are getting ___.",a:"higher and higher",o:["higher and higher", "high and higher", "more and more high", "the higher and higher"],x:"შედარებითი + and + შედარებითი"},
+  {id:"cp_11",s:"The ___ famous the designer is, the more expensive the clothes are.",a:"more",o:["more", "most", "much", "many"],x:"the more …, the more …"},
+  {id:"cp_12",s:"Of the two jackets, the black one is ___.",a:"the cheaper",o:["the cheaper", "the cheapest", "cheapest", "more cheap"],x:"ორიდან ერთი → the + შედარებითი"},
+  {id:"cp_13",s:"My sister is ___ tidier than me.",a:"much",o:["much", "very", "more", "most"],x:"much + შედარებითი"},
+  {id:"cp_14",s:"This jacket isn't nearly ___ warm as my old one.",a:"as",o:["as", "than", "more", "such"],x:"not nearly as … as = ბევრად ნაკლებ"},
+  {id:"cp_15",s:"He drives ___ than his brother.",a:"more carefully",o:["more carefully", "carefullier", "most carefully", "more careful"],x:"ორმარცვლიანი ზმნიზედა → more + -ly"},
+  {id:"cp_16",s:"This shop is ___ crowded than the one in the centre.",a:"less",o:["less", "least", "fewer", "little"],x:"less + adj + than"},
+  {id:"cp_17",s:"The coat was long enough ___ my knees.",a:"to touch",o:["to touch", "touching", "touch", "for touch"],x:"adj + enough + to-inf"},
+  {id:"cp_18",s:"It's too old-fashioned ___ dress to wear to the party.",a:"a",o:["a", "the", "one", "such"],x:"too + adj + a + noun"},
+  {id:"cp_19",s:"That's the ___ film I've ever seen!",a:"worst",o:["worst", "worse", "baddest", "most bad"],x:"bad – worse – worst"},
+  {id:"cp_20",s:"Walking to work takes ___ than taking the bus.",a:"longer",o:["longer", "long", "longest", "more long"],x:"ერთმარცვლიანი → -er"},
+  {id:"cp_21",s:"Online prices are slightly ___ than in the shops.",a:"lower",o:["lower", "low", "lowest", "more low"],x:"slightly + შედარებითი"},
+  {id:"cp_22",s:"John is just about as ___ as me at tennis.",a:"good",o:["good", "better", "best", "well"],x:"just about as … as = თითქმის ისეთივე"},
+  {id:"cp_23",s:"The narrower the street, the ___ the traffic.",a:"slower",o:["slower", "slowest", "more slow", "slowly"],x:"the + შედარებითი …, the + შედარებითი"},
+  {id:"cp_24",s:"The ___ expensive piece in this shop costs only £5.",a:"least",o:["least", "less", "fewer", "little"],x:"the least + adj (ზედა ხარისხი)"},
+  {id:"cp_25",s:"Her dress was far ___ elegant than mine.",a:"more",o:["more", "most", "much", "very"],x:"far + more + adj"},
+  {id:"cp_26",s:"This street is ___ narrower than the main road.",a:"slightly",o:["slightly", "very", "by far", "most"],x:"slightly + შედარებითი"},
+  {id:"cp_27",s:"Trendy clothes are getting ___ every year.",a:"trendier",o:["trendier", "more trendier", "trendiest", "more trendy than"],x:"trendy → trendier (-y ბოლოსართი)"}
+],
+la:[
+  {id:"la_01",s:"Rachel dresses ___ a celebrity, but she's actually a student.",a:"like",o:["like", "as", "such as", "the same"],x:"like = მსგავსება (სინამდვილეში ის არ არის)"},
+  {id:"la_02",s:"Ann works ___ a personal shopper in a big department store.",a:"as",o:["as", "like", "such as", "the same as"],x:"as = როლი, პროფესია (ის არის)"},
+  {id:"la_03",s:"This material feels ___ silk.",a:"like",o:["like", "as", "as if", "such as"],x:"feel + like + არსებითი"},
+  {id:"la_04",s:"There's no place ___ home.",a:"like",o:["like", "as", "such as", "than"],x:"უარყოფა + like + არსებითი"},
+  {id:"la_05",s:"Many people regard Paris ___ the centre of fashion.",a:"as",o:["as", "like", "for", "such as"],x:"regard sb/sth as"},
+  {id:"la_06",s:"She bought the same shoes ___ I did.",a:"as",o:["as", "like", "than", "so"],x:"the same + noun + as"},
+  {id:"la_07",s:"Stop acting ___ a fashionista; you don't even like clothes!",a:"like",o:["like", "as", "such as", "the same"],x:"act like = იქცევა, თითქოს ასეა"},
+  {id:"la_08",s:"___ is easy to find vintage clothes online.",a:"It",o:["It", "There", "This", "What"],x:"it ინფინიტიური ფრაზის ნაცვლად"},
+  {id:"la_09",s:"___ is a tie in the top drawer.",a:"There",o:["There", "It", "This", "That"],x:"there + be — არსებობა, პირველად ახსენე"},
+  {id:"la_10",s:"___ seems that nobody knows who designed this jacket.",a:"It",o:["It", "There", "This", "That"],x:"It seems that…"},
+  {id:"la_11",s:"___ appears to be a sale on at the shopping centre.",a:"There",o:["There", "It", "This", "That"],x:"There appears to be… (მაგრამ It appears that…)"},
+  {id:"la_12",s:"___ was Lydia who first saw the dress in the window.",a:"It",o:["It", "There", "She", "This"],x:"ემფაზა: It was … who…"},
+  {id:"la_13",s:"I would appreciate ___ if you could call me back.",a:"it",o:["it", "there", "so", "them"],x:"I would appreciate it if…"},
+  {id:"la_14",s:"___ took Emma weeks to find the perfect dress.",a:"It",o:["It", "There", "She", "This"],x:"It took sb + დრო + to-inf"},
+  {id:"la_15",s:"___ is always room for improvement.",a:"There",o:["There", "It", "This", "That"],x:"There's always room for…"},
+  {id:"la_16",s:"___ is pointless arguing about it now.",a:"It",o:["It", "There", "That", "What"],x:"It's pointless + -ing"},
+  {id:"la_17",s:"___ no point in buying cheap clothes that fall apart.",a:"There's",o:["There's", "It's", "This is", "That's"],x:"There's no point in + -ing"},
+  {id:"la_18",s:"This fabric looks ___ leather, but it's actually plastic.",a:"like",o:["like", "as", "such as", "the same"],x:"look + like + არსებითი"},
+  {id:"la_19",s:"She is known ___ the queen of fashion.",a:"as",o:["as", "like", "for", "to"],x:"be known as"},
+  {id:"la_20",s:"I find ___ amazing that people still wear these old styles.",a:"it",o:["it", "there", "this", "them"],x:"წინასწარი it: I find it amazing that…"},
+  {id:"la_21",s:"___'s only five minutes till the show starts.",a:"It",o:["It", "There", "This", "That"],x:"it — დრო, მანძილი, ამინდი"},
+  {id:"la_22",s:"Jane hates ___ when people are late.",a:"it",o:["it", "there", "that", "them"],x:"hate it when…"},
+  {id:"la_23",s:"There's nothing ___ being able to wear what you want.",a:"like",o:["like", "as", "such as", "so"],x:"there's nothing like + -ing"},
+  {id:"la_24",s:"___ was really cold yesterday, so I wore my thickest coat.",a:"It",o:["It", "There", "This", "That"],x:"it — ამინდი, ტემპერატურა"},
+  {id:"la_25",s:"I love accessories ___ as scarves and belts.",a:"such",o:["such", "like", "so", "same"],x:"such as = მაგალითად"},
+  {id:"la_26",s:"As ___, she arrived wearing something amazing.",a:"always",o:["always", "usual as", "like", "never"],x:"as always (საუბარში like always)"}
+],
+ee:[
+  {id:"ee_01",s:"A: What is your greatest weakness? B: ___",a:"I can be too impatient at times.",o:["I can be too impatient at times.", "Making a difference to people's lives.", "My mother, who never gave up.", "I prefer to work in a team."],x:"weakness = სუსტი მხარე"},
+  {id:"ee_02",s:"A: What motivates you? B: ___",a:"Making a difference to people's lives.",o:["Making a difference to people's lives.", "People who are always late.", "I can be stubborn at times.", "My grandfather."],x:"motivate = აძლევს სტიმულს"},
+  {id:"ee_03",s:"A: What is your pet peeve? B: ___",a:"People who don't take responsibility.",o:["People who don't take responsibility.", "I'm passionate about music.", "Being creative.", "I'm kind of independent."],x:"pet peeve = ის, რაც ყველაზე მეტად გაღიზიანებს"},
+  {id:"ee_04",s:"A: Who has had the greatest influence in your life? B: ___",a:"My mother, who never gave up.",o:["My mother, who never gave up.", "Missing my exams due to illness.", "People being late.", "I can be impatient."],x:"influence = გავლენა"},
+  {id:"ee_05",s:"A: Do you prefer to work independently or in a team? B: ___",a:"I'm kind of independent, so alone.",o:["I'm kind of independent, so alone.", "My father, definitely.", "Getting things right.", "People who talk too much."],x:"independently = დამოუკიდებლად"},
+  {id:"ee_06",s:"A: What has been your greatest disappointment? B: ___",a:"Missing my final exams because of illness.",o:["Missing my final exams because of illness.", "My best friend.", "Getting something right.", "I'm focused and hard-working."],x:"disappointment = იმედგაცრუება"},
+  {id:"ee_07",s:"A: How would you describe yourself? B: ___",a:"Focused and hard-working.",o:["Focused and hard-working.", "People being late.", "My grandmother.", "Losing the final."],x:"describe yourself = შენი თავის აღწერა"},
+  {id:"ee_08",s:"A: We found the wallet, and all the money was still in it! B: ___",a:"Wow! That was a lucky break!",o:["Wow! That was a lucky break!", "How terrible!", "Hold on. I'm lost.", "I'm in two minds."],x:"lucky break = იღბლიანი შემთხვევა"},
+  {id:"ee_09",s:"A: Then the lights went out and we were stuck in the lift for three hours. B: ___",a:"How awful!",o:["How awful!", "What a lucky break!", "What a relief!", "I'm on the fence."],x:"ცუდ ამბავზე: How awful! / How terrible!"},
+  {id:"ee_10",s:"A: I saw a real UFO last night! B: ___",a:"You've got to be joking!",o:["You've got to be joking!", "I'm having second thoughts.", "How awful!", "I can't make up my mind."],x:"გაკვირვება, უნდობლობა: You've got to be joking!"},
+  {id:"ee_11",s:"A: …so the second planet is really the first one, if you count from the other side. B: ___",a:"Hold on. I'm lost.",o:["Hold on. I'm lost.", "That was a lucky break!", "I know one thing for sure.", "How terrible!"],x:"დაბნეულობა: I'm lost."},
+  {id:"ee_12",s:"A: The second speaker was really confusing. B: ___",a:"I know! I didn't get it either.",o:["I know! I didn't get it either.", "What a relief!", "I'm on the fence.", "That's incredible!"],x:"I don't get it = ვერ გავიგე"},
+  {id:"ee_13",s:"A: The doctors say Mum is going to be fine. B: ___",a:"What a relief!",o:["What a relief!", "How awful!", "I don't get it.", "I'm blowing hot and cold."],x:"What a relief! = როგორ მომეშვა!"},
+  {id:"ee_14",s:"A: So we sat there in the dark and waited… B: ___",a:"What happened next?",o:["What happened next?", "I'm not so sure.", "How can you be so sure?", "I'm in two minds."],x:"თხრობის გაგრძელების თხოვნა"},
+  {id:"ee_15",s:"A: Are you going to buy those boots? B: ___",a:"I'm in two minds. They're lovely, but very expensive.",o:["I'm in two minds. They're lovely, but very expensive.", "What a lucky break!", "Hold on, I'm lost.", "Did you really?"],x:"I'm in two minds = ვერ გადამიწყვეტია"},
+  {id:"ee_16",s:"A: What's wrong? B: ___",a:"I can't make up my mind.",o:["I can't make up my mind.", "That's incredible!", "What happened next?", "How terrible!"],x:"make up your mind = გადაწყვეტა"},
+  {id:"ee_17",s:"A: I know one thing for sure. B: ___",a:"What's that?",o:["What's that?", "What a relief!", "How awful!", "I'm lost."],x:"SB 3c-ის წყვილი"},
+  {id:"ee_18",s:"A: I'm convinced that we can do better. B: ___",a:"How can you be so sure?",o:["How can you be so sure?", "Did you really?", "That was a lucky break!", "What's causing you doubt?"],x:"დარწმუნებულს ეკითხები: How can you be so sure?"},
+  {id:"ee_19",s:"A: I'm not so sure. B: ___",a:"What's causing you doubt?",o:["What's causing you doubt?", "How can you be so sure?", "What a relief!", "You've got to be joking!"],x:"დაეჭვებულს ეკითხები: What's causing you doubt?"},
+  {id:"ee_20",s:"A: Do you still want to sell your car? B: Well, I'm having ___ thoughts.",a:"second",o:["second", "double", "other", "two"],x:"have second thoughts = გადაფიქრება"},
+  {id:"ee_21",s:"A: Which dress will you choose? B: I don't know; I'm on the ___.",a:"fence",o:["fence", "wall", "line", "edge"],x:"I'm on the fence = ვერ გადამიწყვეტია"},
+  {id:"ee_22",s:"A: Will you take the job? B: I keep changing my mind; I'm blowing hot and ___.",a:"cold",o:["cold", "warm", "cool", "freezing"],x:"blow hot and cold = ხან ერთს ფიქრობ, ხან მეორეს"},
+  {id:"ee_23",s:"A: Do you think it will rain? B: I ___ it will; look at those clouds!",a:"reckon",o:["reckon", "wonder", "doubt", "mind"],x:"I reckon = ვფიქრობ, დარწმუნებული ვარ"},
+  {id:"ee_24",s:"A: I've just won a trip to Japan! B: ___",a:"Wow! That's incredible!",o:["Wow! That's incredible!", "How terrible!", "I'm lost.", "I'm having second thoughts."],x:"Wow! That's incredible!"}
+],
+ra:[
+  {id:"ra_01",s:"John is a very ___ person. He never loses his cool.",a:"composed",o:["composed", "arrogant", "modest", "insecure"],x:"WB გვ. 20, V1. composed = მშვიდი"},
+  {id:"ra_02",s:"Susan is very ___ when she needs to make sure people listen to her opinions in the office.",a:"assertive",o:["assertive", "impudent", "arrogant", "enthusiastic"],x:"WB გვ. 20, V2"},
+  {id:"ra_03",s:"Maria is a(n) ___ person who has a lot of self-belief.",a:"self-confident",o:["self-confident", "determined", "emotional", "cunning"],x:"WB გვ. 20, V3"},
+  {id:"ra_04",s:"We looked up at the sky just in time to see a ___ star.",a:"shooting",o:["shooting", "shining", "beaming", "streaking"],x:"WB გვ. 20, V4. shooting star"},
+  {id:"ra_05",s:"The hot sun was ___ down on the golden sand.",a:"blazing",o:["blazing", "twinkling", "dazzling", "glittering"],x:"WB გვ. 20, V5"},
+  {id:"ra_06",s:"Sunshine ___ on the surface of the water.",a:"sparkled",o:["sparkled", "beamed", "dazzled", "glowed"],x:"WB გვ. 20, V6. წიგნის B gleamed-იც სწორია, ამიტომ dazzled-ით შევცვალე (dazzle გარდამავალია: dazzle sb)"},
+  {id:"ra_07",s:"Tom never buys clothes off the ___; he always gets his clothes made to measure.",a:"rack",o:["rack", "shelf", "rail", "cuff"],x:"WB გვ. 20, V7. off the rack = მზა"},
+  {id:"ra_08",s:"Street style includes ___ T-shirts where the colours blend into one another.",a:"tie-dye",o:["tie-dye", "retro", "faded", "pleated"],x:"WB გვ. 20, V8"},
+  {id:"ra_09",s:"Jane prefers clothes in a ___ style.",a:"classic",o:["classic", "flowery", "tight", "second-hand"],x:"WB გვ. 20, V9. classic style"},
+  {id:"ra_10",s:"Mr Jones has ___ many of his students to become history teachers like him.",a:"inspired",o:["inspired", "focused", "achieved", "supported"],x:"WB გვ. 20, V10. inspire sb to do sth"},
+  {id:"ra_11",s:"Many students leave university without ___ their calling.",a:"finding",o:["finding", "seeking", "grabbing", "learning"],x:"WB გვ. 20, V11. find your calling; წიგნის C following-იც შესაძლებელია, ამიტომ grabbing-ით შევცვალე"},
+  {id:"ra_12",s:"The gods demanded that she ___ her daughter.",a:"sacrifice",o:["sacrifice", "give", "waste", "lose"],x:"WB გვ. 20, V12"},
+  {id:"ra_13",s:"The meteor ___ across the sky.",a:"streaked",o:["streaked", "gazed", "twinkled", "shone"],x:"WB გვ. 20, V13. streak = სწრაფად გადაკვეთა"},
+  {id:"ra_14",s:"Lisa always ___ her children to express their personal style in the way they dress.",a:"encourages",o:["encourages", "supports", "achieves", "dedicates"],x:"WB გვ. 20, V14. encourage sb to do sth; წიგნის B inspires-იც შესაძლებელია, ამიტომ achieves-ით შევცვალე"},
+  {id:"ra_15",s:"I shouldn't have ___ out that the further away clothes are made, the more fuel it takes to get them into the shops.",a:"pointed",o:["pointed", "scratched", "taken", "indicated"],x:"WB გვ. 20, V15. point out = აღნიშნა; წიგნის C made (make out that = ამტკიცებდა) შევცვალე taken-ით"},
+  {id:"ra_16",s:"Claire put her life ___ hold during the pandemic.",a:"on",o:["on", "in", "up", "out of"],x:"WB გვ. 20, V16. put sth on hold"},
+  {id:"ra_17",s:"I believe you should focus ___ finishing school before you think about starting up a business!",a:"on",o:["on", "with", "in", "for"],x:"WB გვ. 20, V17. focus on"},
+  {id:"ra_18",s:"People in the past knew the stars ___ heart.",a:"by",o:["by", "for", "at", "with"],x:"WB გვ. 20, V18. by heart = ზეპირად"},
+  {id:"ra_19",s:"Button ___ your jacket; it's freezing cold!",a:"up",o:["up", "in", "down", "out"],x:"WB გვ. 20, V19"},
+  {id:"ra_20",s:"Can I try ___ the dress that's in the window, please?",a:"on",o:["on", "up", "in", "out"],x:"WB გვ. 20, V20. try on = მოზომება"},
+  {id:"ra_21",s:"The workshop on upcycling stirred ___ a lot of interest.",a:"up",o:["up", "in", "on", "around"],x:"WB გვ. 20, V21. stir up interest"},
+  {id:"ra_22",s:"The astronomer narrowed ___ the type of planet to three possibilities.",a:"down",o:["down", "up", "with", "out"],x:"WB გვ. 20, V22"},
+  {id:"ra_23",s:"I need to buy a new pair of slippers; these ones are worn ___.",a:"out",o:["out", "in", "down", "up"],x:"WB გვ. 20, V23. worn out = გაცვეთილი"},
+  {id:"ra_24",s:"The ___ of the meeting was the company's commitment to only use ethical suppliers.",a:"outcome",o:["outcome", "consequence", "conclusion", "decision"],x:"WB გვ. 20, V24. outcome = საბოლოო შედეგი"},
+  {id:"ra_25",s:"If the sky is red in the morning, it is a ___ that the weather will turn bad.",a:"sign",o:["sign", "symbol", "symptom", "signal"],x:"WB გვ. 20, V25"},
+  {id:"ra_26",s:"Lucy ___ of becoming a public speaker.",a:"is thinking",o:["is thinking", "thinks", "is considering", "considers"],x:"WB გვ. 21, G1. think of = განიხილავს → continuous; consider of არ ითქმის"},
+  {id:"ra_27",s:"Ian's inspiration ___ from his grandfather.",a:"comes",o:["comes", "is coming", "coming", "will come"],x:"WB გვ. 21, G2. მუდმივი ფაქტი → present simple; წიგნის C is შევცვალე coming-ით"},
+  {id:"ra_28",s:"Keep watching – the solar eclipse is about ___.",a:"to happen",o:["to happen", "happening", "happen", "to happening"],x:"WB გვ. 21, G3. be about to + V"},
+  {id:"ra_29",s:"You should make a wish when you see a meteor ___ across the sky.",a:"streak",o:["streak", "to streak", "streaks", "streaked"],x:"WB გვ. 21, G4. see + ობიექტი + V; წიგნის D streaking-იც გრამატიკულია, ამიტომ streaked-ით შევცვალე"},
+  {id:"ra_30",s:"In the past, when people saw an eclipse they would ___ the gods were angry.",a:"say",o:["say", "saying", "to say", "says"],x:"WB გვ. 21, G5. would + V"},
+  {id:"ra_31",s:"If you want ___ quality clothes than in the high street shops, you often have to spend a bit more.",a:"better",o:["better", "good", "best", "the best"],x:"WB გვ. 21, G6. than → შედარებითი"},
+  {id:"ra_32",s:"Buying clothes online is ___ than buying them in a shop.",a:"riskier",o:["riskier", "the riskiest", "risky", "more riskier"],x:"WB გვ. 21, G7. risky → riskier; წიგნის A more risky-ც გვხვდება, ამიტომ the riskiest-ით შევცვალე"},
+  {id:"ra_33",s:"Louis tries to shop ___ than everyone else by researching online before he goes to the shops.",a:"more smartly",o:["more smartly", "smartly", "most smartly", "smartlier"],x:"WB გვ. 21, G8. -ly ზმნიზედა → more + -ly"},
+  {id:"ra_34",s:"Mike ___ to start work early in the morning.",a:"used",o:["used", "was used", "got used", "would"],x:"WB გვ. 21, G9. used to + V"},
+  {id:"ra_35",s:"Marsha isn't ___ to waking up early.",a:"used",o:["used", "use", "be used", "get used"],x:"WB გვ. 21, G10. be used to + -ing"},
+  {id:"ra_36",s:"It was a(n) ___ inevitable situation.",a:"totally",o:["totally", "really", "very", "exceptionally"],x:"WB გვ. 21, G11. inevitable ძლიერია"},
+  {id:"ra_37",s:"The sky this evening is ___ perfect for viewing the meteor shower.",a:"absolutely",o:["absolutely", "extremely", "very", "exceptionally"],x:"WB გვ. 21, G12. perfect ძლიერია"},
+  {id:"ra_38",s:"I hate it when pop stars act ___ style icons but only wear designer clothing!",a:"like",o:["like", "as", "as if", "such as"],x:"WB გვ. 21, G13. act like = იქცევა, თითქოს ასეა (სინამდვილეში ასე არ არის)"},
+  {id:"ra_39",s:"It takes ___ water to produce wool than it does to produce synthetic material.",a:"less",o:["less", "little", "lesser", "the least"],x:"WB გვ. 21, G14"},
+  {id:"ra_40",s:"Of all the local businesses that were affected during the pandemic, Joe's was hit ___ by far.",a:"the worst",o:["the worst", "the worse", "more badly", "badly"],x:"WB გვ. 21, G15. by far + ზედა ხარისხი"},
+  {id:"ra_41",s:"He left without ___ what he saw.",a:"saying",o:["saying", "say", "to say", "says"],x:"WB გვ. 21, G16. წინდებული + -ing"},
+  {id:"ra_42",s:"There's no point in ___ any sky-watching later – there are too many clouds. We won't be able to see the meteor shower.",a:"doing",o:["doing", "do", "to do", "to doing"],x:"WB გვ. 21, G17. there's no point in + -ing"},
+  {id:"ra_43",s:"What areas of your life ___ since last year?",a:"have you improved",o:["have you improved", "do you improve", "are you improving", "did you improve"],x:"WB გვ. 21, G18. since → present perfect"},
+  {id:"ra_44",s:"The manager's position is difficult, but Diane ___ it.",a:"really likes",o:["really likes", "is really liking", "has really liked", "has really been liking"],x:"WB გვ. 21, G19. like stative-ია → present simple"},
+  {id:"ra_45",s:"Francis ___ harder in his life than these past two months.",a:"has never worked",o:["has never worked", "never work", "is never working", "has never been working"],x:"WB გვ. 21, G20. never + … than these past months → present perfect"},
+  {id:"ra_46",s:"Nancy ___ a lot of arguments in the office, but she's better now.",a:"used to start",o:["used to start", "was used to starting", "would be starting", "has started"],x:"WB გვ. 21, G21. წარსული ჩვევა, ახლა აღარ → used to; წიგნის C started შევცვალე"},
+  {id:"ra_47",s:"My brother ___ in one dead-end job after another in his twenties.",a:"would work",o:["would work", "got used to work", "was used to work", "used to working"],x:"WB გვ. 21, G22. would = წარსული განმეორებადი მოქმედება; წიგნის B got used to working შევცვალე"},
+  {id:"ra_48",s:"___ should be easier these days to find ethical clothes companies.",a:"It",o:["It", "There", "Here", "They"],x:"WB გვ. 21, G23. it ინფინიტიური ფრაზის ნაცვლად"},
+  {id:"ra_49",s:"Buying used products such as clothes and furniture is ___ better for the environment than buying new.",a:"far",o:["far", "as for", "by far", "more"],x:"WB გვ. 21, G24. far + შედარებითი; by far — მხოლოდ ზედა ხარისხთან"},
+  {id:"ra_50",s:"There was a(n) ___ massive explosion as the meteor crashed to Earth.",a:"absolutely",o:["absolutely", "very", "incredibly", "extremely"],x:"WB გვ. 21, G25. massive ძლიერია → absolutely"}
+],
+pa:[
+  {id:"pa_01",s:"Eventually, Janet ___ the night shift.",a:"got used to working",o:["got used to working", "used to work", "has been used to working", "has got used to working"],x:"GB გვ. 129, №1. eventually + შეჩვევა → get used to + -ing, past simple"},
+  {id:"pa_02",s:"It's no good ___ Jack now; he never answers his mobile while he's at work.",a:"calling",o:["calling", "call", "to call", "to have called"],x:"GB გვ. 129, №2. It's no good + -ing"},
+  {id:"pa_03",s:"Brian ___ of making a new start in another country, but he hasn't decided where yet.",a:"is thinking",o:["is thinking", "thinks", "thought", "had thought"],x:"GB გვ. 129, №3. think of = განიხილავს → continuous"},
+  {id:"pa_04",s:"As a coach, I have noticed that young athletes ___ very anxious before competitions.",a:"become",o:["become", "are becoming", "have become", "have been becoming"],x:"GB გვ. 129, №4. ზოგადი ჭეშმარიტება → present simple"},
+  {id:"pa_05",s:"Since she was a teenager, Sarah ___ following the latest fashion trends.",a:"has always loved",o:["has always loved", "always loves", "is always loving", "has always been loving"],x:"GB გვ. 129, №5. since → perfect; love stative-ია"},
+  {id:"pa_06",s:"Michael ___ to find Mars on his telescope for the last two hours, but he still hasn't succeeded.",a:"has been trying",o:["has been trying", "is trying", "has tried", "was trying"],x:"GB გვ. 129, №6. ხანგრძლივობა, ახლაც გრძელდება"},
+  {id:"pa_07",s:"Before I joined the gym, I ___ excuses for too long about my lack of fitness.",a:"had been making",o:["had been making", "made", "would be making", "was making"],x:"GB გვ. 129, №7. ხანგრძლივობა სხვა წარსულ მოქმედებამდე"},
+  {id:"pa_08",s:"Brian listened to the band ___ their full set of songs from start to finish.",a:"play",o:["play", "to play", "playing", "to have been playing"],x:"GB გვ. 129, №8. listen to + ობიექტი + V = მთლიანად"},
+  {id:"pa_09",s:"Fiona dresses ___ of all her classmates.",a:"the most stylishly",o:["the most stylishly", "more stylish", "more stylishly", "the most stylish"],x:"GB გვ. 129, №9. dresses ზმნაა → ზმნიზედა; of all → ზედა ხარისხი"},
+  {id:"pa_10",s:"Lisa was ___ right when she said the meteor shower was tonight.",a:"quite",o:["quite", "really", "extremely", "utterly"],x:"GB გვ. 129, №10. right ძლიერია → quite (= სრულიად)"},
+  {id:"pa_11",s:"They will never forget ___ the comet shooting across the sky.",a:"seeing",o:["seeing", "to see", "see", "to have seen"],x:"GB გვ. 129, №11. never forget + -ing"},
+  {id:"pa_12",s:"It is ___ impossible to see Jupiter without a telescope.",a:"utterly",o:["utterly", "greatly", "very", "terribly"],x:"GB გვ. 129, №12. impossible ძლიერია"},
+  {id:"pa_13",s:"He quickly put on the suit ___ that it wasn't his size.",a:"only to discover",o:["only to discover", "to only discover", "only discovering", "to discover only"],x:"GB გვ. 129, №13. only + to-inf = მოულოდნელი შედეგი"},
+  {id:"pa_14",s:"The scientific community appreciates everything currently ___ to popularise science among teenagers.",a:"being done",o:["being done", "doing", "having done", "having been done"],x:"GB გვ. 129, №14. ახლა მიმდინარე პასივი"},
+  {id:"pa_15",s:"This is ___ to wear in such hot weather.",a:"too heavy a top",o:["too heavy a top", "a too heavy a top", "a top enough heavy", "heavy enough a top"],x:"GB გვ. 129, №15. too + adj + a + noun"},
+  {id:"pa_16",s:"This fabric ___ satin; it's so soft!",a:"feels like",o:["feels like", "feels as", "looks so", "looks as"],x:"GB გვ. 129, №16. feel + like + არსებითი"},
+  {id:"pa_17",s:"___ is nobody stopping you from leaving.",a:"There",o:["There", "It", "This", "That"],x:"GB გვ. 129, №17. there + be (არსებობა)"},
+  {id:"pa_18",s:"Lisa's best friend arrived at the party wearing ___ she had on.",a:"the same dress as",o:["the same dress as", "the same dress like", "a same dress as", "a dress the same with"],x:"GB გვ. 129, №18. the same + noun + as"},
+  {id:"pa_19",s:"Frank's telescope is ___ about as powerful as the one in the planetarium.",a:"just",o:["just", "almost", "nearly", "quite"],x:"GB გვ. 129, №19. just about as … as"},
+  {id:"pa_20",s:"High Style is ___ of the two clothes shops in town.",a:"the more expensive",o:["the more expensive", "more expensive", "the most expensive", "one of the most expensive"],x:"GB გვ. 129, №20. ორიდან ერთი → the + შედარებითი"}
+]
+};
+
+var CATS = ["v1", "v2", "v3", "pv", "pr", "idm", "wf", "tn", "ub", "ig", "ins", "cp", "la", "ee", "ra", "pa"];
+var LABELS = {
+  "v1":"Unit 1 vocabulary: Dream big",
+  "v2":"Unit 2 vocabulary: Touch of nature",
+  "v3":"Unit 3 vocabulary: Stuff that matters",
+  "pv":"Phrasal verbs (Units 1–3)",
+  "pr":"Prepositions and phrases",
+  "idm":"Idioms and similes",
+  "wf":"Word formation",
+  "tn":"Present and past tenses",
+  "ub":"used to / would / be used to / get used to",
+  "ig":"Infinitive and -ing form",
+  "ins":"Intensifiers",
+  "cp":"Comparisons",
+  "la":"like / as · it / there",
+  "ee":"Everyday English",
+  "ra":"Workbook Revision A (pp. 20–21)",
+  "pa":"Grammar Book Progress Test A (p. 129)",
+  "all":"All mixed",
+  "mis-v1":"Unit 1 vocabulary: mistakes",
+  "mis-v2":"Unit 2 vocabulary: mistakes",
+  "mis-v3":"Unit 3 vocabulary: mistakes",
+  "mis-pv":"Phrasal verbs: mistakes",
+  "mis-pr":"Prepositions: mistakes",
+  "mis-idm":"Idioms & similes: mistakes",
+  "mis-wf":"Word formation: mistakes",
+  "mis-tn":"Present & past tenses: mistakes",
+  "mis-ub":"used to / would: mistakes",
+  "mis-ig":"Infinitive / -ing: mistakes",
+  "mis-ins":"Intensifiers: mistakes",
+  "mis-cp":"Comparisons: mistakes",
+  "mis-la":"like / as · it / there: mistakes",
+  "mis-ee":"Everyday English: mistakes",
+  "mis-ra":"WB Revision A: mistakes",
+  "mis-pa":"GB Progress Test A: mistakes",
+  "mis":"All mistakes",
+  "top":"Most Challenging",
+  "recent":"Recent mistakes",
+  "old":"Old mistakes",
+  "surprise":"Surprise Test",
+  "stats":"Statistics"
+};
+var TAG = {
+  v1:"unit 1 vocabulary",
+  v2:"unit 2 vocabulary",
+  v3:"unit 3 vocabulary",
+  pv:"phrasal verb",
+  pr:"preposition",
+  idm:"idiom",
+  wf:"word formation",
+  tn:"tenses",
+  ub:"used to / would",
+  ig:"infinitive / -ing",
+  ins:"intensifier",
+  cp:"comparison",
+  la:"like / as · it / there",
+  ee:"everyday English",
+  ra:"WB Revision A",
+  pa:"GB Progress Test A"
+};
+
+/* ---- storage ---- */
+function ldS(){try{return JSON.parse(localStorage.getItem("ne13v1")||"{}")}catch(e){return{}}}
+function svS(s){localStorage.setItem("ne13v1",JSON.stringify(s))}
+function ldSn(){try{return JSON.parse(localStorage.getItem("ne13snv1")||"{}")}catch(e){return{}}}
+function svSn(s){localStorage.setItem("ne13snv1",JSON.stringify(s))}
+
+var stats=ldS(), sn=ldSn();
+if(!sn.totalCorrect) sn={totalCorrect:0,totalWrong:0,streak:0};
+var cat="v1", qs=[], idx=0, rC=0, rW=0, answered=false, isMisMode=false, roundTotal=0;
+var pendingMisCat="mis";   // used by gotoMistakes() button
+var loopMode=false, loopStart=0, loopQueue=[];   // "Most challenging" repeats until it is empty
+var GRAD=5;                        // correct answers needed to clear a challenging question
+
+/* Mistake buckets per question -> stats[id].bucket:
+   "none"   : never mistaken (nothing to practise)
+   "recent" : mistaken once            -> "Recent mistakes"
+   "chal"   : mistaken again (2+)       -> "Most challenging" (needs GRAD correct to clear)
+   "old"    : resolved                  -> "Old mistakes" (archive of what you've overcome)
+   stats[id].cc = consecutive correct answers while in "chal" (any wrong resets it). */
+(function migrateBuckets(){
+  var changed=false;
+  Object.keys(stats).forEach(function(id){
+    var s=stats[id]; if(!s||typeof s!=="object") return;
+    if(s.bucket===undefined){
+      if(s.wrong>0) s.bucket = s.mastered ? "old" : (s.wrong>=2 ? "chal" : "recent");
+      else          s.bucket = "none";
+      if(s.cc===undefined) s.cc=0;
+      delete s.mastered;
+      changed=true;
+    }
+  });
+  if(changed) svS(stats);
+})();
+
+/* ---- helpers ---- */
+function shuf(a){return a.slice().sort(function(){return Math.random()-.5})}
+
+function allQs(){
+  var r=[];
+  CATS.forEach(function(c){
+    D[c].forEach(function(q){r.push(Object.assign({},q,{cat:c}))});
+  });
+  return shuf(r);
+}
+function isActiveMis(id){ var s=stats[id]; return !!(s&&(s.bucket==="recent"||s.bucket==="chal")); }
+function allWithCat(){
+  var all=[];
+  CATS.forEach(function(c){D[c].forEach(function(q){all.push(Object.assign({},q,{cat:c}))})});
+  return all;
+}
+function misQsCat(c){
+  return D[c]
+    .filter(function(q){return isActiveMis(q.id);})
+    .map(function(q){return Object.assign({},q,{cat:c})});
+}
+function surpriseQs(){
+  var all=allQs();
+  return all.slice(0,30);
+}
+function misQsAll(){
+  var r=[];
+  CATS.forEach(function(c){r=r.concat(misQsCat(c))});
+  return shuf(r);
+}
+/* Most challenging = questions currently in the "chal" bucket (mistaken 2+ times) */
+function topQs(){
+  return allWithCat()
+    .filter(function(q){return stats[q.id]&&stats[q.id].bucket==="chal";})
+    .sort(function(a,b){return stats[b.id].wrong-stats[a.id].wrong})
+    .slice(0,300);
+}
+/* Recent mistakes = questions currently in the "recent" bucket (mistaken once) */
+function recentQs(){
+  return shuf(allWithCat()
+    .filter(function(q){return stats[q.id]&&stats[q.id].bucket==="recent";})
+    .slice(0,300));
+}
+/* Old mistakes = resolved questions ("old" bucket) — everything you've overcome */
+function oldQs(){
+  return allWithCat()
+    .filter(function(q){return stats[q.id]&&stats[q.id].bucket==="old";})
+    .sort(function(a,b){return a.id<b.id?-1:1});
+}
+
+/* ---- record answer ---- */
+function record(id,ok){
+  var s=stats[id]||(stats[id]={correct:0,wrong:0,bucket:"none",cc:0});
+  if(s.bucket===undefined) s.bucket="none";
+  if(s.cc===undefined) s.cc=0;
+
+  if(ok){
+    s.correct++; sn.totalCorrect++; sn.streak++;
+    if(s.bucket==="recent"){ s.bucket="old"; s.cc=0; }                 // resolved on first correct
+    else if(s.bucket==="chal"){ s.cc++; if(s.cc>=GRAD){ s.bucket="old"; s.cc=0; } } // GRAD in a row clears it
+    /* "none" and "old" stay put on a correct answer */
+  } else {
+    s.wrong++; sn.totalWrong++; sn.streak=0;
+    if(s.bucket==="recent"){ s.bucket="chal"; s.cc=0; }                // mistaken again -> most challenging
+    else if(s.bucket==="chal"){ s.cc=0; }                             // reset the run of correct answers
+    else { s.bucket="recent"; s.cc=0; }                              // new mistake (from none or old)
+  }
+  svS(stats); svSn(sn);
+  if(typeof updAllMisBadgesExt==="function") updAllMisBadgesExt(); else updAllMisBadges();
+}
+
+/* ---- badge / header ---- */
+function getMisCnt(c){
+  return D[c].filter(function(q){return isActiveMis(q.id);}).length;
+}
+function getTotalMis(){
+  return CATS.reduce(function(s,c){return s+getMisCnt(c)},0);
+}
+function updHeader(){
+  /* show current-round stats only */
+  var t=rC+rW;
+  if(loopMode){
+    var rem=topQs().length;
+    document.getElementById("h-tot").textContent=(loopStart-rem)+" / "+loopStart;
+  } else {
+    document.getElementById("h-tot").textContent=roundTotal>0?(rC+rW)+" / "+roundTotal:"--";
+  }
+  document.getElementById("h-str").textContent=sn.streak;
+  document.getElementById("h-acc").textContent=t>0?Math.round(rC/t*100)+"%":"--";
+}
+function updAllMisBadges(){
+  CATS.forEach(function(c){
+    var n=getMisCnt(c);
+    ["bg-mis-"+c,"tb-mis-"+c].forEach(function(id){
+      var el=document.getElementById(id); if(el) el.textContent=n;
+    });
+  });
+  var tot=getTotalMis();
+  ["bg-mis","tb-mis"].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.textContent=tot;
+  });
+}
+function setActive(c){
+  document.querySelectorAll(".nb").forEach(function(b){b.classList.toggle("active",b.dataset.cat===c)});
+  document.querySelectorAll(".tabbtn").forEach(function(b){b.classList.toggle("active",b.dataset.cat===c)});
+}
+
+/* ---- render question ---- */
+function render(){
+  var q=qs[idx];
+  document.getElementById("pf").className="pfill"+(isMisMode?" mis-mode":"");
+  if(loopMode){
+    var rem=topQs().length, done=Math.max(0,loopStart-rem);
+    document.getElementById("pf").style.width=(loopStart>0?Math.round(done/loopStart*100):0)+"%";
+    document.getElementById("qc").textContent=rem+" left to clear";
+  } else {
+    document.getElementById("pf").style.width=Math.round(idx/qs.length*100)+"%";
+    document.getElementById("qc").textContent=(idx+1)+" / "+qs.length;
+  }
+  document.getElementById("qt").textContent=LABELS[cat]||cat;
+
+  /* build option buttons using DOM to avoid any quote issues */
+  var optDiv=document.createElement("div");
+  optDiv.className="opts"; optDiv.id="opts";
+  /* long answers (Everyday English) get one full-width button per line */
+  if(q.o.some(function(o){return o.length>28;})) optDiv.className+=" long";
+  shuf(q.o).forEach(function(o){
+    var btn=document.createElement("button");
+    btn.className="opt";
+    btn.textContent=o;
+    btn.addEventListener("click",function(){choose(btn,o)});
+    optDiv.appendChild(btn);
+  });
+
+  var sen=q.s.replace("___",'<span class="blank" id="bl">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>');
+  var card=document.createElement("div"); card.className="qcard";
+  card.innerHTML='<div class="qtag '+q.cat+'">'+TAG[q.cat]+'</div><div class="qsen">'+sen+'</div>';
+  card.appendChild(optDiv);
+  var fb=document.createElement("div"); fb.className="fb"; fb.id="fb";
+  card.appendChild(fb);
+
+  var nxtBtn=document.createElement("button");
+  nxtBtn.className="btn-next"; nxtBtn.id="bn"; nxtBtn.textContent="Next →";
+  nxtBtn.style.display="none";
+  nxtBtn.addEventListener("click",nxt);
+  var nav=document.createElement("div"); nav.className="qnav";
+  nav.appendChild(nxtBtn);
+
+  var qa=document.getElementById("qa");
+  qa.innerHTML="";
+  qa.appendChild(card);
+  qa.appendChild(nav);
+  answered=false;
+}
+
+function choose(btn,opt){
+  if(answered) return;
+  answered=true;
+  var q=qs[idx];
+  var ok=(opt===q.a);
+  var prev=(stats[q.id]&&stats[q.id].bucket)||"none";
+  record(q.id,ok);
+  if(ok) rC++; else rW++;
+  updHeader();
+
+  var s=stats[q.id]||{}, nb=s.bucket, cc=s.cc||0;
+  /* short note describing how this question moved between mistake buckets */
+  var note="";
+  if(ok){
+    if(prev==="chal"&&nb==="old")        note="&#127881; "+GRAD+" correct &mdash; cleared to Old mistakes!";
+    else if(prev==="chal")               note="&#10003; "+cc+"/"+GRAD+" correct &mdash; keep going.";
+    else if(prev==="recent"&&nb==="old") note="&#10003; Resolved &mdash; moved to Old mistakes.";
+  } else {
+    if(prev==="recent"&&nb==="chal")     note="&#8593; Wrong again &mdash; moved to Most challenging.";
+    else if(prev==="chal")               note="&#8635; Run of correct answers reset to 0/"+GRAD+".";
+    else if(nb==="recent")               note="Added to Recent mistakes.";
+  }
+
+  /* in single-pass mistake modes, drop the question from the rest of this pass
+     once it has actually left the active-mistake set (moved to Old) */
+  if(ok && isMisMode && !loopMode && nb==="old"){
+    qs=qs.filter(function(item,i){return i<=idx||item.id!==q.id});
+  }
+
+  var bl=document.getElementById("bl");
+  bl.textContent=q.a;
+  bl.className="blank "+(ok?"ok":"no");
+
+  document.querySelectorAll(".opt").forEach(function(b){
+    b.disabled=true;
+    var v=b.textContent;
+    if(v===q.a) b.classList.add(ok?"correct":"reveal");
+    else if(v===opt&&!ok) b.classList.add("wrong");
+  });
+
+  var fb=document.getElementById("fb");
+  fb.className="fb show "+(ok?"correct":"wrong");
+  var exSen=q.s.replace("___","<strong>"+q.a+"</strong>");
+  var noteHtml=note?'<div class="removed">'+note+'</div>':"";
+  fb.innerHTML=(ok?"&#10003; Correct!":"&#10007; The correct answer is <strong>"+q.a+"</strong>.")+
+    '<div class="ex">'+exSen+"</div>"+(q.x?'<div class="why">'+escH(q.x)+"</div>":"")+noteHtml;
+
+  document.getElementById("bn").style.display="inline-block";
+  /* speak the completed sentence */
+  speakSentence(q.s, q.a, q.id);
+}
+
+function nxt(){
+  if(loopMode){ nextLoop(); return; }
+  idx++;
+  if(idx>=qs.length) renderDone();
+  else render();
+}
+
+/* "Most challenging" loop: a rotating queue.
+   The question just answered leaves the front; if it is still challenging it is
+   dropped back in at a random position, otherwise (5 correct -> cleared) it is
+   filtered out. The loop ends when nothing challenging is left. */
+function nextLoop(){
+  var cur=loopQueue.shift();                       // remove the one just answered
+  if(cur && stats[cur.id] && stats[cur.id].bucket==="chal"){
+    var n=loopQueue.length;
+    var pos=n===0 ? 0 : 1+Math.floor(Math.random()*n);   // random spot, never the very front
+    loopQueue.splice(pos,0,cur);
+  }
+  /* safety: keep only questions that are still in the challenging bucket */
+  loopQueue=loopQueue.filter(function(q){return stats[q.id]&&stats[q.id].bucket==="chal";});
+  if(loopQueue.length===0){ renderDone(); return; }
+  qs=[loopQueue[0]]; idx=0;
+  render();
+}
+
+/* ---- done screen ---- */
+function gotoMistakes(){ sw(pendingMisCat); }
+
+function renderDone(){
+  document.getElementById("pf").style.width="100%";
+  var t=rC+rW, p=t>0?Math.round(rC/t*100):0;
+  var g=p>=90?"&#127942;":p>=75?"&#11088;":p>=60?"&#128077;":"&#128218;";
+  var m=p>=90?"Outstanding! You really know Units 1–3.":
+        p>=75?"Great work! Keep it up.":
+        p>=60?"Good effort! Review your mistakes.":
+              "Keep practising — you can do it!";
+  if(loopMode){
+    g="&#127881;";
+    m="Every challenging question cleared &mdash; all moved to Old mistakes!";
+  }
+
+  pendingMisCat=(cat==="all"||cat==="mis")?"mis":(isMisMode?cat:"mis-"+cat);
+  var showMisBtn=rW>0&&!isMisMode;
+  var misNote="";
+
+  var done=document.createElement("div"); done.className="done";
+  done.innerHTML='<div class="done-grade">'+g+'</div>'+
+    '<div class="done-score">'+rC+"/"+t+"</div>"+
+    '<div class="done-pct">'+p+"% correct this round</div>"+
+    '<div class="done-msg">'+m+"</div>";
+
+  var btns=document.createElement("div"); btns.className="done-btns";
+  var again=document.createElement("button"); again.className="btn-again";
+  again.textContent="Try again"; again.addEventListener("click",startRound);
+  btns.appendChild(again);
+
+  if(showMisBtn){
+    var mb=document.createElement("button"); mb.className="btn-mis";
+    mb.textContent="Practice mistakes →";
+    mb.addEventListener("click",gotoMistakes);
+    btns.appendChild(mb);
+  }
+  done.appendChild(btns);
+
+  /* no misNote needed - mistakes persist in stats */
+
+  var qa=document.getElementById("qa"); qa.innerHTML=""; qa.appendChild(done);
+  document.getElementById("qc").textContent=t+" / "+t;
+}
+
+/* ---- stats panel ---- */
+function renderStats(){
+  var t=sn.totalCorrect+sn.totalWrong;
+  document.getElementById("s-acc").textContent=t>0?Math.round(sn.totalCorrect/t*100)+"%":"--";
+  document.getElementById("s-tot").textContent=t;
+  document.getElementById("s-cor").textContent=sn.totalCorrect;
+  document.getElementById("s-wrg").textContent=sn.totalWrong;
+
+  CATS.forEach(function(c){
+    var co=0,tot=0;
+    D[c].forEach(function(q){
+      var s=stats[q.id];
+      /* resolved (old) questions no longer count toward accuracy — they reflect progress made */
+      if(s&&s.bucket!=="old"){co+=s.correct; tot+=s.correct+s.wrong;}
+    });
+    var p=tot>0?Math.round(co/tot*100):0;
+    document.getElementById("bar-"+c).style.width=(tot>0?p:0)+"%";
+    document.getElementById("pct-"+c).textContent=tot>0?p+"%":"--";
+    var mc=getMisCnt(c);
+    document.getElementById("mis-cnt-"+c).textContent=mc>0?mc+" err":"--";
+  });
+
+  var top=topQs(), recent=recentQs(), old=oldQs();
+
+  /* Practice Most Challenging button (loops until empty) */
+  var practiceBtn=document.getElementById("practice-top-btn");
+  if(top.length>0){
+    practiceBtn.style.display="inline-flex";
+    practiceBtn.onclick=function(){ sw("top"); };
+  } else {
+    practiceBtn.style.display="none";
+  }
+  renderMistakeList("topm",top,"No questions with 2+ mistakes yet — keep practising!","chal");
+
+  /* Practice Recent Mistakes button */
+  var practiceRecentBtn=document.getElementById("practice-others-btn");
+  if(practiceRecentBtn){
+    if(recent.length>0){
+      practiceRecentBtn.style.display="inline-flex";
+      practiceRecentBtn.onclick=function(){ sw("recent"); };
+    } else {
+      practiceRecentBtn.style.display="none";
+    }
+  }
+  renderMistakeList("allm",recent,"No recent mistakes.","recent");
+
+  /* Old mistakes = everything you've resolved (archive) + practice button */
+  renderMistakeList("oldm",old,"No resolved mistakes yet.","old");
+  var practiceOldBtn=document.getElementById("practice-old-btn");
+  if(practiceOldBtn){
+    if(old.length>0){
+      practiceOldBtn.style.display="inline-flex";
+      practiceOldBtn.onclick=function(){ sw("old"); };
+    } else {
+      practiceOldBtn.style.display="none";
+    }
+  }
+}
+
+function renderMistakeList(elId,list,emptyMsg,mode){
+  var el=document.getElementById(elId);
+  if(!el) return;
+  el.innerHTML="";
+  if(list.length===0){
+    el.innerHTML='<div class="no-m">'+emptyMsg+'</div>';
+    return;
+  }
+  var lastCol = mode==="chal" ? "To clear" : (mode==="old" ? "Status" : "Errors");
+  var hdr=document.createElement("div"); hdr.className="mhdr";
+  hdr.innerHTML="<span>Sentence</span><span>Answer</span><span>"+lastCol+"</span>";
+  el.appendChild(hdr);
+  list.forEach(function(q){
+    var s=stats[q.id]||{correct:0,wrong:0,cc:0};
+    var row=document.createElement("div"); row.className="mrow";
+    var sen=document.createElement("div"); sen.className="msen";
+    sen.textContent=q.s.replace("___","...");
+    var ans=document.createElement("div"); ans.className="mans";
+    ans.textContent=q.a;
+    var cnt=document.createElement("div"); cnt.className="mcnt";
+    if(mode==="chal"){
+      cnt.textContent=(s.cc||0)+"/"+GRAD;
+    } else if(mode==="old"){
+      cnt.textContent="✓"; cnt.style.color="var(--teal)";
+    } else {
+      cnt.textContent=(s.wrong||0)+"×";
+    }
+    row.appendChild(sen); row.appendChild(ans); row.appendChild(cnt);
+    el.appendChild(row);
+  });
+}
+
+/* ---- navigation ---- */
+function sw(c){
+  cat=c; setActive(c);
+  isMisMode=(c==="mis"||c.indexOf("mis-")===0||c==="top"||c==="recent"||c==="old");
+  loopMode=false;
+  var qp=document.getElementById("qp"),
+      sp=document.getElementById("sp"),
+      fcp=document.getElementById("fcp");
+
+  // Hide all panels first
+  qp.style.display="none";
+  sp.classList.remove("on");
+  fcp.classList.remove("on");
+
+  if(c==="stats"){
+    sp.classList.add("on"); renderStats(); return;
+  }
+  if(c.indexOf("fc-")===0){
+    fcp.classList.add("on"); startFC(c); return;
+  }
+  qp.style.display="block";
+  startRound();
+}
+
+function startRound(){
+  idx=0; rC=0; rW=0; roundTotal=0; loopMode=false;
+
+  /* "Most challenging" is a loop that repeats challenging questions until empty */
+  if(cat==="top"){
+    loopMode=true; loopQueue=shuf(topQs()); loopStart=loopQueue.length; roundTotal=loopStart;
+    updHeader();
+    if(loopStart===0){ showEmpty("No challenging questions right now &mdash; nicely done!"); return; }
+    qs=[loopQueue[0]]; idx=0;
+    render();
+    return;
+  }
+
+  if(cat==="surprise")             qs=surpriseQs();
+  else if(cat==="all")             qs=allQs();
+  else if(cat==="mis")             qs=misQsAll();
+  else if(cat==="recent")          qs=recentQs();
+  else if(cat==="old")             qs=shuf(oldQs());
+  else if(cat.indexOf("mis-")===0) qs=shuf(misQsCat(cat.replace("mis-","")));
+  else                             qs=shuf(D[cat]).map(function(q){return Object.assign({},q,{cat:cat});});
+  roundTotal=qs.length;
+  updHeader();
+
+  if(qs.length===0){ showEmpty("No mistakes recorded yet!<br>Answer some questions first."); return; }
+  render();
+}
+
+function showEmpty(msg){
+  document.getElementById("qt").textContent=LABELS[cat]||cat;
+  document.getElementById("qc").textContent="0 / 0";
+  document.getElementById("pf").style.width="0%";
+  document.getElementById("qa").innerHTML='<div class="done empty"><div style="font-size:48px">&#127881;</div><p>'+msg+'</p></div>';
+}
+
+function clrStats(){
+  if(!confirm("Reset all statistics? This cannot be undone.")) return;
+  stats={}; svS(stats);
+  sn={totalCorrect:0,totalWrong:0,streak:0}; svSn(sn);
+  updHeader(); updAllMisBadges(); renderStats();
+}
+
+/* ---- drawer (mobile menu) ---- */
+function openDrawer(){
+  var d=document.getElementById("drawer");
+  var o=document.getElementById("drawer-overlay");
+  d.style.display="block";
+  o.style.display="block";
+  // Force reflow so transition fires
+  d.getBoundingClientRect();
+  o.getBoundingClientRect();
+  d.classList.add("open");
+  o.classList.add("open");
+  document.body.style.overflow="hidden";
+}
+function closeDrawer(){
+  var d=document.getElementById("drawer");
+  var o=document.getElementById("drawer-overlay");
+  d.classList.remove("open");
+  o.classList.remove("open");
+  document.body.style.overflow="";
+  // Hide after transition ends
+  setTimeout(function(){ 
+    if(!d.classList.contains("open")) d.style.display="none";
+    if(!o.classList.contains("open")) o.style.display="none";
+  }, 300);
+}
+function swD(c){ closeDrawer(); sw(c); }
+
+document.getElementById("ham-btn").addEventListener("click", openDrawer);
+document.getElementById("drawer-close").addEventListener("click", closeDrawer);
+document.getElementById("drawer-overlay").addEventListener("click", closeDrawer);
+
+/* sync drawer badges with sidebar badges */
+function updAllMisBadgesExt(){
+  updAllMisBadges();
+  /* mirror sidebar badges into drawer */
+  ["v1", "v2", "v3", "pv", "pr", "idm", "wf", "tn", "ub", "ig", "ins", "cp", "la", "ee", "ra", "pa", "all"].forEach(function(c){
+    var sb=document.getElementById("bg-"+c);
+    var db=document.getElementById("dbg-"+c);
+    if(sb&&db) db.textContent=sb.textContent;
+    var sm=document.getElementById("bg-mis-"+c);
+    var dm=document.getElementById("dbg-mis-"+c);
+    if(sm&&dm) dm.textContent=sm.textContent;
+  });
+  var sm=document.getElementById("bg-mis");
+  var dm=document.getElementById("dbg-mis");
+  if(sm&&dm) dm.textContent=sm.textContent;
+}
+
+/* sync active state into drawer */
+var _origSetActive=setActive;
+setActive=function(c){
+  _origSetActive(c);
+  document.querySelectorAll(".drawer .nb").forEach(function(b){
+    b.classList.toggle("active",b.dataset.cat===c);
+  });
+};
+
+/* ---- init ---- */
+updHeader(); updAllMisBadges(); startRound();
+
+/* ==================== FLASHCARD ENGINE ==================== */
+var FC = {
+u1:[
+  {id:"fcu1_001",b:"achieve",f:"to accomplish sth",e:"achieve (sth) /əˈtʃiːv/ (v)"},
+  {id:"fcu1_002",b:"achieve a goal",f:"to succeed in doing sth",e:"achieve a goal (phr)"},
+  {id:"fcu1_003",b:"adore",f:"to love or like sb very much",e:"adore /əˈdɔː/ (v)"},
+  {id:"fcu1_004",b:"approach",f:"to go to sb and speak to them",e:"approach /əprəʊtʃ/ (v)"},
+  {id:"fcu1_005",b:"calculate",f:"to determine a number or an amount from information that you already have",e:"calculate /ˈkælkjuleɪt/ (v)"},
+  {id:"fcu1_006",b:"capable",f:"able to do sth",e:"capable (of sth) /ˈkeɪpəbəl/ (adj)"},
+  {id:"fcu1_007",b:"caretaker",f:"sb who cleans and maintains a building",e:"caretaker /ˈkeəteɪkə/ (n)"},
+  {id:"fcu1_008",b:"chase a dream",f:"to try hard to achieve a goal",e:"chase a dream (phr)"},
+  {id:"fcu1_009",b:"condition",f:"the state of sth",e:"condition /kənˈdɪʃən/ (n)"},
+  {id:"fcu1_010",b:"connection",f:"a relationship",e:"connection /kəˈnekʃən/ (n)"},
+  {id:"fcu1_011",b:"countless",f:"numerous; very many",e:"countless /ˈkaʊntləs/ (adj)"},
+  {id:"fcu1_012",b:"devoted",f:"very caring",e:"devoted /dɪˈvəʊtɪd/ (adj)"},
+  {id:"fcu1_013",b:"find your calling",f:"to discover your chosen profession or career",e:"find your calling (phr)"},
+  {id:"fcu1_014",b:"focus",f:"to concentrate on sth",e:"focus (on sth) /ˈfəʊkəs/ (v)"},
+  {id:"fcu1_015",b:"fulfil",f:"to make sth come true",e:"fulfil (sth) /fʊlˈfɪl/ (v)"},
+  {id:"fcu1_016",b:"fulfil your potential",f:"to achieve as much as your natural ability makes possible",e:"fulfil your potential (phr)"},
+  {id:"fcu1_017",b:"gain",f:"to obtain or achieve sth",e:"gain /ɡeɪn/ (v)"},
+  {id:"fcu1_018",b:"genetic disorder",f:"an illness or disability caused by defective or mutated genes",e:"genetic disorder /dʒəˌnetɪk dɪsˈɔːdə/ (n)"},
+  {id:"fcu1_019",b:"give out",f:"to give sth to a lot of people; to distribute sth",e:"give out /ˌɡɪv aʊt/ (phr v)"},
+  {id:"fcu1_020",b:"give up",f:"to stop making an effort; to quit",e:"give up /ˌɡɪv ʌp/ (phr v)"},
+  {id:"fcu1_021",b:"grab an opportunity",f:"to take advantage of a favourable chance",e:"grab an opportunity (phr)"},
+  {id:"fcu1_022",b:"hang in",f:"to not give up in difficulties",e:"hang in /ˌhæŋ ˈɪn/ (phr v)"},
+  {id:"fcu1_023",b:"hang out",f:"to spend a lot of time somewhere or with sb",e:"hang out /ˌhæŋ ˈaʊt/ (phr v)"},
+  {id:"fcu1_024",b:"honour",f:"to show your respect to sb",e:"honour /ˈɒnə/ (v)"},
+  {id:"fcu1_025",b:"idolise",f:"to admire and love sb greatly",e:"idolise /ˈaɪdəlaɪz/ (v)"},
+  {id:"fcu1_026",b:"inspire people to be better",f:"to influence people to become better",e:"inspire people to be better (phr)"},
+  {id:"fcu1_027",b:"keep on",f:"to continue (doing sth)",e:"keep on /ˌkiːp ˈɒn/ (phr v)"},
+  {id:"fcu1_028",b:"keep up",f:"to continue doing sth good",e:"keep (sth) up /ˌkiːp ˈʌp/ (phr v)"},
+  {id:"fcu1_029",b:"live a full life",f:"to enjoy doing a lot of things",e:"live a full life (phr)"},
+  {id:"fcu1_030",b:"manage",f:"to succeed in doing sth",e:"manage (to do sth) /ˈmænɪdʒ/ (v)"},
+  {id:"fcu1_031",b:"motivational",f:"inspirational; encouraging",e:"motivational /ˌməʊtɪˈveɪʃənəl/ (adj)"},
+  {id:"fcu1_032",b:"occur",f:"to happen",e:"occur /əˈkɜː/ (v)"},
+  {id:"fcu1_033",b:"persist",f:"to keep doing sth",e:"persist /pəˈsɪst/ (v)"},
+  {id:"fcu1_034",b:"position",f:"the place where sb or sth is",e:"position /pəˈzɪʃən/ (n)"},
+  {id:"fcu1_035",b:"possibility",f:"the chance for sth to happen",e:"possibility /ˌpɒsəˈbɪləti/ (n)"},
+  {id:"fcu1_036",b:"potential",f:"sb’s natural ability to succeed",e:"potential /pəˈtenʃəl/ (n)"},
+  {id:"fcu1_037",b:"prize",f:"to consider sth very important or valuable",e:"prize /praɪz/ (v)"},
+  {id:"fcu1_038",b:"probability",f:"likelihood",e:"probability /ˌprɒbəˈbɪləti/ (n)"},
+  {id:"fcu1_039",b:"project confidence",f:"to show self-assurance",e:"project confidence (phr)"},
+  {id:"fcu1_040",b:"prospect",f:"the possibility that sth might happen",e:"prospect /ˈprɒspekt/ (n)"},
+  {id:"fcu1_041",b:"resist",f:"to refuse to do sth",e:"resist /rɪˈzɪst/ (v)"},
+  {id:"fcu1_042",b:"severe",f:"serious; very bad",e:"severe /sɪˈvɪə/ (adj)"},
+  {id:"fcu1_043",b:"situation",f:"the condition in which sb finds themselves",e:"situation /ˌsɪtʃuˈeɪʃən/ (n)"},
+  {id:"fcu1_044",b:"start on",f:"to begin dealing with sth",e:"start on (sth) /stɑːt ɒn/ (phr v)"},
+  {id:"fcu1_045",b:"start off",f:"to help sb begin doing sth",e:"start (sb) off /ˌstɑːt ˈɒf/ (phr v)"},
+  {id:"fcu1_046",b:"state",f:"the condition that sb or sth is in",e:"state /steɪt/ (n)"},
+  {id:"fcu1_047",b:"stir in",f:"to add sth to sth else and mix them",e:"stir in /ˌstɜːr ˈɪn/ (phr v)"},
+  {id:"fcu1_048",b:"stir up",f:"to cause problems, trouble, etc",e:"stir (sth) up /ˌstɜːr ˈʌp/ (phr v)"},
+  {id:"fcu1_049",b:"succeed",f:"to get the desired results by doing sth",e:"succeed (in doing sth) /səkˈsiːd/ (v)"},
+  {id:"fcu1_050",b:"take into consideration",f:"to take into account; to think about sth before making a final decision",e:"take into consideration (phr)"},
+  {id:"fcu1_051",b:"teasing",f:"mocking",e:"teasing /ˈtiːzɪŋ/ (n)"},
+  {id:"fcu1_052",b:"work on",f:"to spend time improving sth",e:"work on (sth) /wɜːk ɒn/ (phr v)"},
+  {id:"fcu1_053",b:"work out",f:"to exercise",e:"work out /ˌwɜːk ˈaʊt/ (phr v)"},
+  {id:"fcu1_054",b:"conflict",f:"disagreement and argument",e:"conflict /ˈkɒnflɪkt/ (n)"},
+  {id:"fcu1_055",b:"goodwill ambassador",f:"a person who supports a specific cause or global issue and is appointed by the United Nations",e:"goodwill ambassador /ɡʊdˈwɪl æmˌbæsədə/ (n)"},
+  {id:"fcu1_056",b:"hit the books",f:"to start studying very hard",e:"hit the books (idm)"},
+  {id:"fcu1_057",b:"mindfulness",f:"deep thinking; true awareness",e:"mindfulness /ˈmaɪndfəlnəs/ (n)"},
+  {id:"fcu1_058",b:"overseas",f:"abroad; in a foreign country",e:"overseas /əʊvəˈsiːz/ (adv)"},
+  {id:"fcu1_059",b:"shift",f:"the time period during which sb works",e:"shift /ʃɪft/ (n)"},
+  {id:"fcu1_060",b:"as bold as brass",f:"(of a person) arrogant",e:"as bold as brass (idm)"},
+  {id:"fcu1_061",b:"as cold as ice",f:"(of a person) very unfriendly and unfeeling",e:"as cold as ice (idm)"},
+  {id:"fcu1_062",b:"as cool as a cucumber",f:"(of a person) very calm",e:"as cool as a cucumber (idm)"},
+  {id:"fcu1_063",b:"as hard as nails",f:"(of a person) very tough",e:"as hard as nails (idm)"},
+  {id:"fcu1_064",b:"as keen as mustard",f:"(of a person) very eager and enthusiastic",e:"as keen as mustard (idm)"},
+  {id:"fcu1_065",b:"as sly as a fox",f:"(of a person) very clever in a cunning way",e:"as sly as a fox (idm)"},
+  {id:"fcu1_066",b:"assertive",f:"confident enough to state your needs and opinions clearly",e:"assertive /əˈsɜːtɪv/ (adj)"},
+  {id:"fcu1_067",b:"attitude",f:"a manner of behaviour based on your opinion of a person or situation",e:"attitude /ˈætɪtjuːd/ (n)"},
+  {id:"fcu1_068",b:"composed",f:"calm and in control of yourself",e:"composed /kəmˈpəʊzd/ (adj)"},
+  {id:"fcu1_069",b:"cunning",f:"crafty; deceptive in a clever way",e:"cunning /ˈkʌnɪŋ/ (adj)"},
+  {id:"fcu1_070",b:"determined",f:"having made a firm decision to do sth",e:"determined /dɪˈtɜːmɪnd/ (adj)"},
+  {id:"fcu1_071",b:"emotional",f:"sentimental; causing sb to have strong feelings",e:"emotional /ɪˈməʊʃənəl/ (adj)"},
+  {id:"fcu1_072",b:"enthusiastic",f:"showing a lot of interest in and excitement about, sth",e:"enthusiastic /ɪnˌθjuːziˈæstɪk/ (adj)"},
+  {id:"fcu1_073",b:"focused",f:"having a clear and definite target",e:"focused /ˈfəʊkəst/ (adj)"},
+  {id:"fcu1_074",b:"generous",f:"giving people more of your time or money in order to help them",e:"generous /ˈdʒenərəs/ (adj)"},
+  {id:"fcu1_075",b:"impudent",f:"disrespectful; rude",e:"impudent /ˈɪmpjʊdənt/ (adj)"},
+  {id:"fcu1_076",b:"indifferent",f:"not caring about sb/sth",e:"indifferent /ɪnˈdɪfərənt/ (adj)"},
+  {id:"fcu1_077",b:"insecure",f:"not confident about your abilities, knowledge, etc",e:"insecure /ˌɪnsɪˈkjʊə/ (adj)"},
+  {id:"fcu1_078",b:"modest",f:"humble; not showing off your skills, abilities, etc",e:"modest /ˈmɒdɪst/ (adj)"},
+  {id:"fcu1_079",b:"narrow-minded",f:"unwilling to accept other people’s ideas",e:"narrow-minded /ˌnærəʊ ˈmaɪndɪd/ (adj)"},
+  {id:"fcu1_080",b:"passionate",f:"having a strong feeling about sth",e:"passionate /ˈpæʃənət/ (adj)"},
+  {id:"fcu1_081",b:"quick-witted",f:"clever",e:"quick-witted /ˌkwɪk ˈwɪtɪd/ (adj)"},
+  {id:"fcu1_082",b:"reserved",f:"shy; keeping your feelings hidden",e:"reserved /rɪˈzɜːvd/ (adj)"},
+  {id:"fcu1_083",b:"ruthless",f:"hard-hearted",e:"ruthless /ˈruːθləs/ (adj)"},
+  {id:"fcu1_084",b:"self-confident",f:"sure of yourself and your abilities",e:"self-confident /ˌself ˈkɒnfɪdənt/ (adj)"},
+  {id:"fcu1_085",b:"stubborn",f:"unwilling to change your opinions or beliefs",e:"stubborn /ˈstʌbən/ (adj)"},
+  {id:"fcu1_086",b:"upbringing",f:"the way parents educate and treat their children as they grow up",e:"upbringing /ˈʌpˌbrɪŋɪŋ/ (n)"},
+  {id:"fcu1_087",b:"wasteful",f:"letting time, money, etc go unused",e:"wasteful /ˈweɪstfəl/ (adj)"},
+  {id:"fcu1_088",b:"achievable",f:"that can be done successfully",e:"achievable /əˈtʃiːvəbəl/ (adj)"},
+  {id:"fcu1_089",b:"achieve",f:"to manage to get sth",e:"achieve /əˈtʃiːv/ (v)"},
+  {id:"fcu1_090",b:"bright",f:"intelligent; clever",e:"bright /braɪt/ (adj)"},
+  {id:"fcu1_091",b:"bring sb to justice",f:"to catch a criminal and take them to court",e:"bring sb to justice (phr)"},
+  {id:"fcu1_092",b:"conform",f:"to behave according to the accepted standards of a society",e:"conform (to sth) /kənˈfɔːm/ (v)"},
+  {id:"fcu1_093",b:"confuse",f:"to puzzle sb",e:"confuse /kənˈfjuːz/ (v)"},
+  {id:"fcu1_094",b:"conventional",f:"conservative; traditional",e:"conventional /kənˈvenʃənəl/ (adj)"},
+  {id:"fcu1_095",b:"devote",f:"to dedicate sth to sth",e:"devote /dɪˈvəʊt/ (v)"},
+  {id:"fcu1_096",b:"empowering",f:"giving sb strength and confidence",e:"empowering /ɪmˈpaʊərɪŋ/ (adj)"},
+  {id:"fcu1_097",b:"fiery",f:"(of a person) passionate",e:"fiery /ˈfaɪəri/ (adj)"},
+  {id:"fcu1_098",b:"flesh-and-blood",f:"real and living",e:"flesh-and-blood (phr)"},
+  {id:"fcu1_099",b:"guardian",f:"sb who is responsible for a child instead of their parents",e:"guardian /ˈɡɑːdiən/ (n)"},
+  {id:"fcu1_100",b:"life-changing",f:"bringing about dramatic changes",e:"life-changing /ˈlaɪf ˌtʃeɪndʒɪŋ/ (adj)"},
+  {id:"fcu1_101",b:"lord",f:"a title in mediaeval Europe of a powerful man",e:"lord /lɔːd/ (n)"},
+  {id:"fcu1_102",b:"on my own terms",f:"under my own conditions",e:"on my own terms (phr)"},
+  {id:"fcu1_103",b:"refuse",f:"to not agree to do sth",e:"refuse /rɪˈfjuːz/ (v)"},
+  {id:"fcu1_104",b:"strength",f:"determination",e:"strength /streŋθ/ (n)"},
+  {id:"fcu1_105",b:"support",f:"to help and encourage sb",e:"support /səˈpɔːt/ (v)"},
+  {id:"fcu1_106",b:"typical",f:"usual; normal",e:"typical /ˈtɪpɪkəl/ (adj)"}
+],
+u2:[
+  {id:"fcu2_001",b:"anger",f:"to make sb very angry",e:"anger /ˈæŋɡə/ (v)"},
+  {id:"fcu2_002",b:"approach",f:"to get closer to sb/sth",e:"approach /əˈprəʊtʃ/ (v)"},
+  {id:"fcu2_003",b:"area",f:"a particular part of a city, town, country, etc",e:"area /ˈeəriə/ (n)"},
+  {id:"fcu2_004",b:"black hole",f:"each of the areas in space where gravity is so strong that nothing, even light, can escape from them",e:"black hole /ˌblæk ˈhəʊl/ (n)"},
+  {id:"fcu2_005",b:"blast off",f:"(of a rocket) to leave the ground",e:"blast off /ˌblɑːst ˈɒf/ (phr v)"},
+  {id:"fcu2_006",b:"blast out",f:"(of loud noise, music, etc) to be heard",e:"blast out /ˌblɑːst ˈaʊt/ (phr v)"},
+  {id:"fcu2_007",b:"boast",f:"to talk proudly about sb/sth",e:"boast /bəʊst/ (v)"},
+  {id:"fcu2_008",b:"by heart",f:"from memory",e:"by heart (phr)"},
+  {id:"fcu2_009",b:"celestial body",f:"a natural object in space, such as a planet or star",e:"celestial body /səˌlestiəl ˈbɒdi/ (n)"},
+  {id:"fcu2_010",b:"conflict",f:"disagreement and argument",e:"conflict /ˈkɒnflɪkt/ (n)"},
+  {id:"fcu2_011",b:"constellation",f:"a group of stars forming a pattern",e:"constellation /ˌkɒnstəˈleɪʃən/ (n)"},
+  {id:"fcu2_012",b:"credit",f:"praise",e:"credit /ˈkredɪt/ (n)"},
+  {id:"fcu2_013",b:"dawn",f:"the time just before the sun starts rising",e:"dawn /dɔːn/ (n)"},
+  {id:"fcu2_014",b:"debris",f:"pieces of sth that has been destroyed",e:"debris /ˈdebriː/ (n)"},
+  {id:"fcu2_015",b:"dusk",f:"the time just before night falls, when it is not yet dark",e:"dusk /dʌsk/ (n)"},
+  {id:"fcu2_016",b:"event",f:"a social gathering",e:"event /ɪˈvent/ (n)"},
+  {id:"fcu2_017",b:"fearsome",f:"frightening",e:"fearsome /ˈfɪəsəm/ (adj)"},
+  {id:"fcu2_018",b:"fitting",f:"appropriate; suitable",e:"fitting /ˈfɪtɪŋ/ (adj)"},
+  {id:"fcu2_019",b:"full moon",f:"the time when the moon is at its fullest",e:"full moon /ˌfʊl ˈmuːn/ (n)"},
+  {id:"fcu2_020",b:"gas giant",f:"a large planet mainly consisting of hydrogen and helium, such as Jupiter, Saturn, Uranus and Neptune",e:"gas giant /ˈɡæs ˌdʒaɪənt/ (n)"},
+  {id:"fcu2_021",b:"gaze",f:"looking at sth steadily for a long time",e:"gaze /ɡeɪz/ (n)"},
+  {id:"fcu2_022",b:"give away",f:"to give sth you possess to sb else",e:"give away /ˌɡɪv əˈweɪ/ (phr v)"},
+  {id:"fcu2_023",b:"give off",f:"to emit sth",e:"give off /ˌɡɪv ˈɒf/ (phr v)"},
+  {id:"fcu2_024",b:"happening",f:"an occasion that has happened",e:"happening /ˈhæpənɪŋ/ (n)"},
+  {id:"fcu2_025",b:"harvest",f:"to pick and collect crops",e:"harvest /ˈhɑːvɪst/ (v)"},
+  {id:"fcu2_026",b:"heat through",f:"to reheat cooked food",e:"heat through /ˌhiːt ˈθruː/ (phr v)"},
+  {id:"fcu2_027",b:"heat up",f:"to become very hot",e:"heat up /ˌhiːt ˈʌp/ (phr v)"},
+  {id:"fcu2_028",b:"hemisphere",f:"each of the two halves of the Earth",e:"hemisphere /ˈhemɪsfɪə/ (n)"},
+  {id:"fcu2_029",b:"in orbit",f:"(of a planet) circling another planet",e:"in orbit (phr)"},
+  {id:"fcu2_030",b:"incident",f:"sth unusual or serious that happens",e:"incident /ˈɪnsɪdənt/ (n)"},
+  {id:"fcu2_031",b:"infancy",f:"the early stages of life; babyhood",e:"infancy /ˈɪnfənsi/ (n)"},
+  {id:"fcu2_032",b:"invisibility",f:"being impossible to be seen",e:"invisibility /ɪnˌvɪzəˈbɪləti/ (n)"},
+  {id:"fcu2_033",b:"lie",f:"to exist in a place",e:"lie /laɪ/ (v)"},
+  {id:"fcu2_034",b:"location",f:"the place of a building in relation to other places or buildings",e:"location /ləʊˈkeɪʃən/ (n)"},
+  {id:"fcu2_035",b:"meteor shower",f:"a number of meteors producing a bright light and moving at high speeds across the sky at night",e:"meteor shower /ˈmiːtiə ˌʃaʊə/ (n)"},
+  {id:"fcu2_036",b:"Milky Way",f:"our galaxy",e:"Milky Way /ˌmɪlki ˈweɪ/ (n)"},
+  {id:"fcu2_037",b:"narrow down",f:"to reduce the number of possibilities or choices",e:"narrow down /ˌnærəʊ ˈdaʊn/ (phr v)"},
+  {id:"fcu2_038",b:"observer",f:"sb who watches sth but does not get involved",e:"observer /əbˈzɜːvə/ (n)"},
+  {id:"fcu2_039",b:"occurrence",f:"sth that happens often",e:"occurrence /əˈkʌrəns/ (n)"},
+  {id:"fcu2_040",b:"onlooker",f:"an observer",e:"onlooker /ˈɒnˌlʊkə/ (n)"},
+  {id:"fcu2_041",b:"point out",f:"to show where sth is",e:"point out /ˌpɔɪnt ˈaʊt/ (phr v)"},
+  {id:"fcu2_042",b:"point up",f:"to clearly show that sth is important",e:"point up /ˌpɔɪnt ˈʌp/ (phr v)"},
+  {id:"fcu2_043",b:"position",f:"the place where sth is in relation to other geographical places",e:"position /pəˈzɪʃən/ (n)"},
+  {id:"fcu2_044",b:"sacrifice",f:"the act of killing sb as an offering to a god",e:"sacrifice /ˈsækrɪfaɪs/ (n)"},
+  {id:"fcu2_045",b:"shooting star",f:"a star that moves quickly across the sky",e:"shooting star /ˌʃuːtɪŋ ˈstɑː/ (n)"},
+  {id:"fcu2_046",b:"sign",f:"an indication of sth",e:"sign /saɪn/ (n)"},
+  {id:"fcu2_047",b:"signal",f:"an action, sound, etc that sends a message",e:"signal /sɪɡnəl/ (n)"},
+  {id:"fcu2_048",b:"site",f:"an important/historic place",e:"site /saɪt/ (n)"},
+  {id:"fcu2_049",b:"spectator",f:"sb who watches a sporting event",e:"spectator /spekˈteɪtə/ (n)"},
+  {id:"fcu2_050",b:"spy",f:"to happen to see sb/sth",e:"spy /spaɪ/ (v)"},
+  {id:"fcu2_051",b:"streak",f:"to move somewhere very quickly",e:"streak /striːk/ (v)"},
+  {id:"fcu2_052",b:"symbol",f:"an object that represents sth",e:"symbol /ˈsɪmbəl/ (n)"},
+  {id:"fcu2_053",b:"symptom",f:"evidence of a health problem",e:"symptom /ˈsɪmptəm/ (n)"},
+  {id:"fcu2_054",b:"the Big Bang",f:"the huge explosion that is believed by scientists to have created the universe",e:"the Big Bang /ðə ˌbɪɡ ˈbæŋ/ (n)"},
+  {id:"fcu2_055",b:"total eclipse",f:"the phenomenon of the whole disc of the Sun or Moon being completely hidden",e:"total eclipse /ˌtəʊtl ɪˈklɪps/ (n)"},
+  {id:"fcu2_056",b:"viewer",f:"sb who watches TV",e:"viewer /ˈvjuːə/ (n)"},
+  {id:"fcu2_057",b:"devastated",f:"extremely shocked and upset",e:"devastated /ˈdevəsteɪtɪd/ (adj)"},
+  {id:"fcu2_058",b:"fatal",f:"causing death",e:"fatal /ˈfeɪtl/ (adj)"},
+  {id:"fcu2_059",b:"haunt",f:"(of a ghost) to often appear in a place or to sb",e:"haunt /hɔːnt/ (v)"},
+  {id:"fcu2_060",b:"plead",f:"to beg sb; to ask sb in an intense and emotional way",e:"plead (with sb) /pliːd/ (v)"},
+  {id:"fcu2_061",b:"swallow",f:"(of sth big) to make sth or sb disappear within its body",e:"swallow /ˈswɒləʊ/ (v)"},
+  {id:"fcu2_062",b:"weightlessness",f:"the state of not being affected by gravity",e:"weightlessness /ˈweɪtləsnəs/ (n)"},
+  {id:"fcu2_063",b:"whip",f:"to move sth very fast",e:"whip /wɪp/ (v)"},
+  {id:"fcu2_064",b:"beam",f:"to send out a line of light or heat",e:"beam /biːm/ (v)"},
+  {id:"fcu2_065",b:"blaze",f:"to burn strongly and brightly",e:"blaze /bleɪz/ (v)"},
+  {id:"fcu2_066",b:"dazzle",f:"(of a strong light) to blind sb temporarily",e:"dazzle /dæzəl/ (v)"},
+  {id:"fcu2_067",b:"flicker",f:"to shine or burn with an unsteady light that goes on and off very fast",e:"flicker /ˈflɪkə/ (v)"},
+  {id:"fcu2_068",b:"gleam",f:"to shine brightly with reflected light",e:"gleam /ɡliːm/ (v)"},
+  {id:"fcu2_069",b:"glitter",f:"to shine by reflection with small flashes of light",e:"glitter /ˈɡlɪtə/ (v)"},
+  {id:"fcu2_070",b:"glow",f:"to produce a soft light",e:"glow /ɡləʊ/ (v)"},
+  {id:"fcu2_071",b:"knight in shining armour",f:"sb who helps you in a difficult situation",e:"knight in shining armour (idm)"},
+  {id:"fcu2_072",b:"make hay while the sun shines",f:"to take advantage of a situation while it lasts",e:"make hay while the sun shines (idm)"},
+  {id:"fcu2_073",b:"pierce",f:"(of light) to suddenly appear somewhere",e:"pierce /pɪəs/ (v)"},
+  {id:"fcu2_074",b:"rain or shine",f:"whatever the weather",e:"rain or shine (idm)"},
+  {id:"fcu2_075",b:"Rise and shine",f:"(in the imperative) Wake up and get out of bed!",e:"Rise and shine! (idm)"},
+  {id:"fcu2_076",b:"sparkle",f:"to shine brightly producing flashes of light",e:"sparkle /ˈspɑːkəl/ (v)"},
+  {id:"fcu2_077",b:"take a shine to sb",f:"to begin to like sb",e:"take a shine to sb (idm)"},
+  {id:"fcu2_078",b:"twinkle",f:"to shine with an unsteady light",e:"twinkle /ˈtwɪŋkəl/ (v)"},
+  {id:"fcu2_079",b:"wealth",f:"a large fortune, amount of money, etc",e:"wealth /welθ/ (n)"},
+  {id:"fcu2_080",b:"attached",f:"connected with sth",e:"attached (to sth) /əˈtætʃt/ (pp)"},
+  {id:"fcu2_081",b:"breeze",f:"a light and pleasant wind",e:"breeze /briːz/ (n)"},
+  {id:"fcu2_082",b:"bury",f:"to put a dead person’s body in a grave",e:"bury /ˈberi/ (v)"},
+  {id:"fcu2_083",b:"cast a spell",f:"to use magical powers to affect sb/sth",e:"cast a spell (on sb/sth) (phr)"},
+  {id:"fcu2_084",b:"decade",f:"a period of ten years",e:"decade /ˈdekeɪd/ (n)"},
+  {id:"fcu2_085",b:"discover",f:"to find sth for the first time",e:"discover /dɪsˈkʌvə/ (v)"},
+  {id:"fcu2_086",b:"enchantment",f:"a magic spell",e:"enchantment /ɪnˈtʃɑːntmənt/ (n)"},
+  {id:"fcu2_087",b:"gentle",f:"not extreme or demanding",e:"gentle /ˈdʒentl/ (adj)"},
+  {id:"fcu2_088",b:"grab",f:"to take hold of sth suddenly",e:"grab /ɡræb/ (v)"},
+  {id:"fcu2_089",b:"lead",f:"very heavy",e:"lead /led/ (adj)"},
+  {id:"fcu2_090",b:"promise",f:"to say that you will do sth and give your word",e:"promise /ˈprɒmɪs/ (v)"},
+  {id:"fcu2_091",b:"realise",f:"to become aware of sth",e:"realise /ˈrɪəlaɪz/ (v)"},
+  {id:"fcu2_092",b:"recount",f:"to tell sb what happened in the past; to narrate",e:"recount /rɪˈkaʊnt/ (v)"},
+  {id:"fcu2_093",b:"reflection",f:"the image of sb/sth seen in a mirror or on water surface",e:"reflection /rɪˈflekʃən/ (n)"},
+  {id:"fcu2_094",b:"remain",f:"to continue to exist",e:"remain /rɪˈmeɪn/ (v)"},
+  {id:"fcu2_095",b:"roar with laughter",f:"to laugh very loudly",e:"roar with laughter (phr)"},
+  {id:"fcu2_096",b:"totter",f:"to walk unsteadily and with difficulty",e:"totter /ˈtɒtə/ (v)"},
+  {id:"fcu2_097",b:"trick",f:"to deceive sb",e:"trick /trɪk/ (v)"},
+  {id:"fcu2_098",b:"warrior",f:"a soldier or fighter who is experienced in fighting, especially of the past",e:"warrior /ˈwɒriə/ (n)"},
+  {id:"fcu2_099",b:"weep",f:"to cry; to shed tears",e:"weep /wiːp/ (v)"}
+],
+u3:[
+  {id:"fcu3_001",b:"a pair of denim jeans",f:"a pair of casual trousers made from a strong, blue, cotton cloth",e:"a pair of denim jeans (phr)"},
+  {id:"fcu3_002",b:"baggy",f:"(of clothes) loose-fitting",e:"baggy /ˈbæɡi/ (adj)"},
+  {id:"fcu3_003",b:"button down",f:"to fasten sth down with buttons to secure it (e.g. collar)",e:"button down /ˌbʌtn ˈdaʊn/ (phr v)"},
+  {id:"fcu3_004",b:"button up",f:"to join the two sides of a garment by fastening its buttons",e:"button up /ˌbʌtn ˈʌp/ (phr v)"},
+  {id:"fcu3_005",b:"casual",f:"(of clothes) not formal",e:"casual /ˈkæʒuəl/ (adj)"},
+  {id:"fcu3_006",b:"classic",f:"(of clothes) traditional, simple and not influenced by fashion trends",e:"classic /ˈklæsɪk/ (adj)"},
+  {id:"fcu3_007",b:"conclusion",f:"an opinion or judgement reached after consideration",e:"conclusion /kənˈkluːʒən/ (n)"},
+  {id:"fcu3_008",b:"consequence",f:"sth that happens as a result of sth else",e:"consequence /ˈkɒnsɪkwəns/ (n)"},
+  {id:"fcu3_009",b:"co-own",f:"to be the owner of a business, etc together with one or more other people",e:"co-own /kəʊ ˈəʊn/ (v)"},
+  {id:"fcu3_010",b:"cotton",f:"a soft white substance used to make thread and fabrics",e:"cotton /kɒtn/ (n)"},
+  {id:"fcu3_011",b:"crocheting",f:"the activity of making cloth by using a needle with a small hook at the end and cotton/woollen thread",e:"crocheting /ˈkrəʊʃeɪɪŋ/ (n)"},
+  {id:"fcu3_012",b:"cruel",f:"causing suffering",e:"cruel /ˈkruːəl/ (adj)"},
+  {id:"fcu3_013",b:"decision",f:"a choice you make after thinking about or discussing sth",e:"decision /dɪˈsɪʒən/ (n)"},
+  {id:"fcu3_014",b:"designer clothing",f:"expensive fashionable clothes made by a famous designer",e:"designer clothing /dɪˌzaɪnə ˈkləʊðɪŋ/ (n)"},
+  {id:"fcu3_015",b:"developing country",f:"a country with little industry and, usually, low incomes",e:"developing country (phr)"},
+  {id:"fcu3_016",b:"effect",f:"a change caused by sth",e:"effect /ɪˈfekt/ (n)"},
+  {id:"fcu3_017",b:"encourage",f:"to make sb feel that they want to do sth",e:"encourage /ɪnˈkʌrɪdʒ/ (v)"},
+  {id:"fcu3_018",b:"exercise",f:"to use or apply sth (a right, a power, consciousness, etc)",e:"exercise /ˈeksəsaɪz/ (v)"},
+  {id:"fcu3_019",b:"fashion industry",f:"businesses manufacturing clothes",e:"fashion industry /ˈfæʃən ˌɪndəstri/ (n)"},
+  {id:"fcu3_020",b:"fashionista",f:"sb who always follows the latest fashions",e:"fashionista /ˌfæʃəˈniːstə/ (n)"},
+  {id:"fcu3_021",b:"fast fashion",f:"producing fashionable clothes very fast and at a low cost",e:"fast fashion /ˌfɑːst ˈfæʃən/ (adj)"},
+  {id:"fcu3_022",b:"flowery",f:"(of a cloth pattern) having flowers",e:"flowery /ˈflaʊəri/ (adj)"},
+  {id:"fcu3_023",b:"focus",f:"to give a lot of attention to sth",e:"focus (on sth) /ˈfəʊkəs/ (v)"},
+  {id:"fcu3_024",b:"from scratch",f:"from the very beginning",e:"from scratch (phr)"},
+  {id:"fcu3_025",b:"garment",f:"a piece of clothing",e:"garment /ˈɡɑːmənt/ (n)"},
+  {id:"fcu3_026",b:"hang out",f:"to spend a lot of time somewhere or with sb",e:"hang out /ˌhæŋ ˈaʊt/ (phr v)"},
+  {id:"fcu3_027",b:"hang up",f:"to suspend clothes on a hook or hanger",e:"hang up /ˌhæŋ ˈʌp/ (phr v)"},
+  {id:"fcu3_028",b:"impact",f:"the result of an action on sth",e:"impact (on sth) /ˈɪmpækt/ (n)"},
+  {id:"fcu3_029",b:"impression",f:"sb’s feelings and opinions about sb/sth",e:"impression /ɪmˈpreʃən/ (n)"},
+  {id:"fcu3_030",b:"in stock",f:"available for sale",e:"in stock (phr)"},
+  {id:"fcu3_031",b:"influence",f:"the power to cause sb to change how they behave, think, etc",e:"influence /ˈɪnfluəns/ (n)"},
+  {id:"fcu3_032",b:"irreparable",f:"not able to be fixed",e:"irreparable /ɪˈrepərəbəl/ (adj)"},
+  {id:"fcu3_033",b:"knitting",f:"the activity of making clothes using needles and wool",e:"knitting /ˈnɪtɪŋ/ (n)"},
+  {id:"fcu3_034",b:"last",f:"(of an item) to continue to exist for a period of time",e:"last /lɑːst/ (v)"},
+  {id:"fcu3_035",b:"loose",f:"(of clothes) large; not fitting tightly",e:"loose /luːs/ (adj)"},
+  {id:"fcu3_036",b:"low",f:"little; not significant",e:"low /ləʊ/ (adj)"},
+  {id:"fcu3_037",b:"mend",f:"to fix or repair sth",e:"mend /mend/ (v)"},
+  {id:"fcu3_038",b:"off the rack",f:"(of clothes) ready-made",e:"off the rack (phr)"},
+  {id:"fcu3_039",b:"outcome",f:"a result",e:"outcome /ˈaʊtkʌm/ (n)"},
+  {id:"fcu3_040",b:"patch",f:"to cover a hole in clothes, etc by sewing a piece of cloth on it",e:"patch /pætʃ/ (v)"},
+  {id:"fcu3_041",b:"perform",f:"to do; to carry out an action",e:"perform /pəˈfɔːm/ (v)"},
+  {id:"fcu3_042",b:"plain",f:"(of clothes) not colourful or decorated",e:"plain /pleɪn/ (adj)"},
+  {id:"fcu3_043",b:"point out",f:"to mention sth",e:"point out /pɔɪnt ˈaʊt/ (phr v)"},
+  {id:"fcu3_044",b:"rehearse",f:"to repeat a play, a concert, etc in order to be ready for the public performance",e:"rehearse /rɪˈhɜːs/ (v)"},
+  {id:"fcu3_045",b:"renovate",f:"to repair sth, so that it is in good condition again",e:"renovate /ˈrenəveɪt/ (v)"},
+  {id:"fcu3_046",b:"research",f:"a careful study to discover facts",e:"research /rɪˈsɜːtʃ/ (n)"},
+  {id:"fcu3_047",b:"restore",f:"to return sth to its previous good condition",e:"restore /rɪˈstɔː/ (v)"},
+  {id:"fcu3_048",b:"scruffy",f:"(of clothes) old and dirty",e:"scruffy /ˈskrʌfi/ (adj)"},
+  {id:"fcu3_049",b:"second-hand",f:"not new; owned before",e:"second-hand /ˌsekənd ˈhænd/ (adj)"},
+  {id:"fcu3_050",b:"sewing",f:"the activity of making or mending clothes using a needle and thread",e:"sewing /ˈsəʊɪŋ/ (n)"},
+  {id:"fcu3_051",b:"stylish",f:"fashionable; trendy",e:"stylish /staɪlɪʃ/ (adj)"},
+  {id:"fcu3_052",b:"support",f:"to show sb approval and encouragement",e:"support /səˈpɔːt/ (v)"},
+  {id:"fcu3_053",b:"sustainable",f:"not causing damage to the environment",e:"sustainable /səˈsteɪnəbəl/ (adj)"},
+  {id:"fcu3_054",b:"take in",f:"to make clothes smaller",e:"take in /ˌteɪk ˈɪn/ (phr v)"},
+  {id:"fcu3_055",b:"take off",f:"to remove sth that you are wearing",e:"take off /ˌteɪk ˈɒf/ (phr v)"},
+  {id:"fcu3_056",b:"textile fibre",f:"each of the threads that make up a fabric",e:"textile fibre /ˈtekstaɪl ˌfaɪbə/ (n)"},
+  {id:"fcu3_057",b:"thrifty",f:"using money carefully; not wasteful",e:"thrifty /ˈθrɪfti/ (adj)"},
+  {id:"fcu3_058",b:"tight",f:"(of clothes) fitting the body very closely",e:"tight /taɪt/ (adj)"},
+  {id:"fcu3_059",b:"train",f:"to practise an activity to become better at it",e:"train /treɪn/ (v)"},
+  {id:"fcu3_060",b:"try on",f:"to put on a piece of clothing to see if it fits you or if you like it before buying it",e:"try on /ˌtraɪ ˈɒn/ (phr v)"},
+  {id:"fcu3_061",b:"try out",f:"to test sth to see if it works or is suitable",e:"try out /ˌtraɪ ˈaʊt/ (phr v)"},
+  {id:"fcu3_062",b:"wardrobe",f:"a cupboard where we hang and store our clothes",e:"wardrobe /ˈwɔːdrəʊb/ (n)"},
+  {id:"fcu3_063",b:"waste",f:"the careless use of sth",e:"waste /weɪst/ (n)"},
+  {id:"fcu3_064",b:"wear away",f:"to cause sth to disintegrate slowly because it is used a lot",e:"wear away /ˌweər əˈweɪ/ (phr v)"},
+  {id:"fcu3_065",b:"wear out",f:"to use sth until it is no longer in good condition",e:"wear out /ˌweər ˈaʊt/ (phr v)"},
+  {id:"fcu3_066",b:"daunting",f:"frightening and discouraging",e:"daunting /ˈdɔːntɪŋ/ (adj)"},
+  {id:"fcu3_067",b:"decent",f:"of quite a good quality",e:"decent /diːsənt/ (adj)"},
+  {id:"fcu3_068",b:"disposable",f:"that can be thrown away after it’s been used",e:"disposable /dɪˈspəʊzəbəl/ (adj)"},
+  {id:"fcu3_069",b:"fine sewing",f:"the activity of making delicate high-quality clothes by hand",e:"fine sewing (phr)"},
+  {id:"fcu3_070",b:"inherently",f:"essentially; by nature",e:"inherently /ɪnˈhɪərəntli/ (adv)"},
+  {id:"fcu3_071",b:"offender",f:"sb/sth that has a bad effect on sth; sb/sth that causes problems for sth",e:"offender /əˈfendə/ (n)"},
+  {id:"fcu3_072",b:"outlet store",f:"a shop where things are sold at a cheaper price than usual",e:"outlet store /ˈaʊtlət stɔː/ (n)"},
+  {id:"fcu3_073",b:"seasoned",f:"experienced",e:"seasoned /ˈsiːzənd/ (adj)"},
+  {id:"fcu3_074",b:"sustainable shopper",f:"a consumer who buys goods that don’t have a negative impact on the environment",e:"sustainable shopper (phr)"},
+  {id:"fcu3_075",b:"wages",f:"the payment for your work on a daily or weekly basis",e:"wages /ˈweɪdʒɪz/ (pl n)"},
+  {id:"fcu3_076",b:"ankle boots",f:"boots that go up to or just above the ankle",e:"ankle boots /ˈæŋkəl buːts/ (n)"},
+  {id:"fcu3_077",b:"be all mouth and no trousers",f:"to talk boastfully about doing sth but never actually do it",e:"be all mouth and no trousers (idm)"},
+  {id:"fcu3_078",b:"eager",f:"willing to do sth; keen",e:"eager /ˈiːɡə/ (adj)"},
+  {id:"fcu3_079",b:"faded blue jeans",f:"jeans that have lost most of their colour",e:"faded blue jeans (phr)"},
+  {id:"fcu3_080",b:"give sth a shot",f:"to make an attempt to do sth",e:"give sth a shot (phr)"},
+  {id:"fcu3_081",b:"have second thoughts",f:"to reconsider sth",e:"have second thoughts (phr)"},
+  {id:"fcu3_082",b:"intrinsic",f:"relating to the basic nature of sth; inherent",e:"intrinsic /ɪnˈtrɪnsɪk/ (adj)"},
+  {id:"fcu3_083",b:"matching belt",f:"a belt that goes well together with a garment",e:"matching belt (phr)"},
+  {id:"fcu3_084",b:"money burns a hole in your pocket",f:"to feel the strong need to spend your money",e:"money burns a hole in your pocket (idm)"},
+  {id:"fcu3_085",b:"on a shoestring",f:"on a tight budget; without spending much money",e:"on a shoestring (idm)"},
+  {id:"fcu3_086",b:"pleated skirt",f:"a skirt having permanent narrow folds",e:"pleated skirt (phr)"},
+  {id:"fcu3_087",b:"retro trainers",f:"athletic shoes styled in fashions from the past",e:"retro trainers (phr)"},
+  {id:"fcu3_088",b:"roll up your sleeves",f:"to prepare for hard work",e:"roll up your sleeves (idm)"},
+  {id:"fcu3_089",b:"rolled-up sleeves",f:"sleeves that have been folded over many times to make them shorter",e:"rolled-up sleeves (phr)"},
+  {id:"fcu3_090",b:"scour",f:"to look for sth carefully",e:"scour /skaʊə/ (v)"},
+  {id:"fcu3_091",b:"scroll through",f:"to move information on a computer screen up or down so that you can read it",e:"scroll through /skrəʊl θruː/ (phr v)"},
+  {id:"fcu3_092",b:"skinny jeans",f:"very tight-fitting jeans with narrow legs",e:"skinny jeans (phr)"},
+  {id:"fcu3_093",b:"slip-on shoes",f:"a casual type of shoes that are easy to put on and take off because they haven’t got fastenings or laces",e:"slip-on shoes (phr)"},
+  {id:"fcu3_094",b:"tie-dye vest",f:"an undershirt whose designs are made by tying knots in it and dyeing it",e:"tie-dye vest (phr)"},
+  {id:"fcu3_095",b:"tighten your belt",f:"to make financial sacrifices by reducing your spending",e:"tighten your belt (idm)"},
+  {id:"fcu3_096",b:"wield",f:"to exert a lot of influence or power over sb",e:"wield /wiːld/ (v)"},
+  {id:"fcu3_097",b:"with hat in hand",f:"in a humble manner",e:"with hat in hand (idm)"},
+  {id:"fcu3_098",b:"adjustable",f:"that can be changed to different positions or sizes",e:"adjustable /əˈdʒʌstəbəl/ (adj)"},
+  {id:"fcu3_099",b:"adorn",f:"to decorate sth",e:"adorn /əˈdɔːn/ (v)"},
+  {id:"fcu3_100",b:"attire",f:"clothes",e:"attire /əˈtaɪə/ (n)"},
+  {id:"fcu3_101",b:"biting",f:"(of weather) so cold that it makes you feel uncomfortable",e:"biting /ˈbaɪtɪŋ/ (adj)"},
+  {id:"fcu3_102",b:"cement",f:"to make sth stronger",e:"cement /səˈment/ (v)"},
+  {id:"fcu3_103",b:"distinguish",f:"to recognise the difference between two things",e:"distinguish /dɪˈstɪŋɡwɪʃ/ (v)"},
+  {id:"fcu3_104",b:"durable",f:"long-lasting",e:"durable /ˌdjʊərəbəl/ (adj)"},
+  {id:"fcu3_105",b:"haute couture",f:"expensive clothes of original design and high quality",e:"haute couture /ˌəʊt kuːˈtjʊə/ (n)"},
+  {id:"fcu3_106",b:"headwear",f:"covering for the head, such as hats, caps, etc",e:"headwear /ˈhedweə/ (n)"},
+  {id:"fcu3_107",b:"lack",f:"to not have sth",e:"lack /læk/ (v)"},
+  {id:"fcu3_108",b:"must-wear",f:"that is strongly recommended to wear",e:"must-wear /ˌmʌst ˈweə/ (adj)"},
+  {id:"fcu3_109",b:"simultaneously",f:"at the same time",e:"simultaneously /ˌsɪməlˈteɪniəsli/ (adv)"},
+  {id:"fcu3_110",b:"snap-back strap",f:"the thin strip of flexible material with snap fasteners on the back of a cap that can be adjusted to fit any size",e:"snap-back strap (phr)"},
+  {id:"fcu3_111",b:"utility",f:"usefulness",e:"utility /juːˈtɪləti/ (n)"},
+  {id:"fcu3_112",b:"authentic",f:"genuine",e:"authentic /ɔːˈθentɪk/ (adj)"},
+  {id:"fcu3_113",b:"concept",f:"an idea; a notion",e:"concept /ˈkɒnsept/ (n)"},
+  {id:"fcu3_114",b:"glory",f:"great beauty",e:"glory /ˈɡlɔːri/ (n)"},
+  {id:"fcu3_115",b:"justified",f:"having an acceptable reason for doing sth",e:"justified (in doing sth) /ˈdʒʌstɪfaɪd/ (adj)"},
+  {id:"fcu3_116",b:"mortal",f:"a human being",e:"mortal /ˈmɔːtəl/ (n)"},
+  {id:"fcu3_117",b:"narcissism",f:"excessive admiration of yourself; vanity",e:"narcissism /ˈnɑːsɪsɪzəm/ (n)"},
+  {id:"fcu3_118",b:"never judge a book by its cover",f:"we should never judge the value of sb/sth by their appearance",e:"never judge a book by its cover (idm)"},
+  {id:"fcu3_119",b:"pride",f:"self-importance; arrogance",e:"pride /praɪd/ (n)"},
+  {id:"fcu3_120",b:"revolve",f:"to focus on sb",e:"revolve (around sb) /rɪˈvɒlv/ (phr v)"},
+  {id:"fcu3_121",b:"vanity",f:"too much pride",e:"vanity /ˈvænəti/ (n)"},
+  {id:"fcu3_122",b:"be on the right track",f:"to act in such a way that you are likely to succeed in sth",e:"be on the right track (idm)"},
+  {id:"fcu3_123",b:"field",f:"all the people taking part in a competition",e:"field /fiːld/ (n)"},
+  {id:"fcu3_124",b:"humbled",f:"feeling that you don’t deserve an honour, prize, etc",e:"humbled /ˈhʌmbəld/ (adj)"},
+  {id:"fcu3_125",b:"nominate",f:"to propose sb as a candidate for an award, honour, position, etc",e:"nominate (sb for sth) /ˈnɒmɪneɪt/ (v)"},
+  {id:"fcu3_126",b:"showcase",f:"to display sth publicly",e:"showcase /ˈʃəʊkeɪs/ (v)"},
+  {id:"fcu3_127",b:"slow fashion",f:"the process of manufacturing high quality clothes, as opposed to fast production of poorly made garments",e:"slow fashion (phr)"},
+  {id:"fcu3_128",b:"stack",f:"a pile of sth; a heap of sth",e:"stack (of sth) /stæk/ (n)"},
+  {id:"fcu3_129",b:"sustainable fashion",f:"garments that have been made in a way not causing damage to the environment",e:"sustainable fashion (phr)"},
+  {id:"fcu3_130",b:"vision",f:"a dream; a future plan",e:"vision /ˈvɪʒən/ (n)"}
+],
+pv:[
+  {id:"fcpv_001",b:"give out",f:"to give sth to a lot of people; to distribute sth",e:"give out /ˌɡɪv aʊt/ (phr v)"},
+  {id:"fcpv_002",b:"give up",f:"to stop making an effort; to quit",e:"give up /ˌɡɪv ʌp/ (phr v)"},
+  {id:"fcpv_003",b:"hang in",f:"to not give up in difficulties",e:"hang in /ˌhæŋ ˈɪn/ (phr v)"},
+  {id:"fcpv_004",b:"hang out",f:"to spend a lot of time somewhere or with sb",e:"hang out /ˌhæŋ ˈaʊt/ (phr v)"},
+  {id:"fcpv_005",b:"keep on",f:"to continue (doing sth)",e:"keep on /ˌkiːp ˈɒn/ (phr v)"},
+  {id:"fcpv_006",b:"keep up",f:"to continue doing sth good",e:"keep (sth) up /ˌkiːp ˈʌp/ (phr v)"},
+  {id:"fcpv_007",b:"start on",f:"to begin dealing with sth",e:"start on (sth) /stɑːt ɒn/ (phr v)"},
+  {id:"fcpv_008",b:"start off",f:"to help sb begin doing sth",e:"start (sb) off /ˌstɑːt ˈɒf/ (phr v)"},
+  {id:"fcpv_009",b:"stir in",f:"to add sth to sth else and mix them",e:"stir in /ˌstɜːr ˈɪn/ (phr v)"},
+  {id:"fcpv_010",b:"stir up",f:"to cause problems, trouble, etc",e:"stir (sth) up /ˌstɜːr ˈʌp/ (phr v)"},
+  {id:"fcpv_011",b:"work on",f:"to spend time improving sth",e:"work on (sth) /wɜːk ɒn/ (phr v)"},
+  {id:"fcpv_012",b:"work out",f:"to exercise",e:"work out /ˌwɜːk ˈaʊt/ (phr v)"},
+  {id:"fcpv_013",b:"blast off",f:"(of a rocket) to leave the ground",e:"blast off /ˌblɑːst ˈɒf/ (phr v)"},
+  {id:"fcpv_014",b:"blast out",f:"(of loud noise, music, etc) to be heard",e:"blast out /ˌblɑːst ˈaʊt/ (phr v)"},
+  {id:"fcpv_015",b:"give away",f:"to give sth you possess to sb else",e:"give away /ˌɡɪv əˈweɪ/ (phr v)"},
+  {id:"fcpv_016",b:"give off",f:"to emit sth",e:"give off /ˌɡɪv ˈɒf/ (phr v)"},
+  {id:"fcpv_017",b:"heat through",f:"to reheat cooked food",e:"heat through /ˌhiːt ˈθruː/ (phr v)"},
+  {id:"fcpv_018",b:"heat up",f:"to become very hot",e:"heat up /ˌhiːt ˈʌp/ (phr v)"},
+  {id:"fcpv_019",b:"narrow down",f:"to reduce the number of possibilities or choices",e:"narrow down /ˌnærəʊ ˈdaʊn/ (phr v)"},
+  {id:"fcpv_020",b:"point out",f:"to show where sth is",e:"point out /ˌpɔɪnt ˈaʊt/ (phr v)"},
+  {id:"fcpv_021",b:"point up",f:"to clearly show that sth is important",e:"point up /ˌpɔɪnt ˈʌp/ (phr v)"},
+  {id:"fcpv_022",b:"button down",f:"to fasten sth down with buttons to secure it (e.g. collar)",e:"button down /ˌbʌtn ˈdaʊn/ (phr v)"},
+  {id:"fcpv_023",b:"button up",f:"to join the two sides of a garment by fastening its buttons",e:"button up /ˌbʌtn ˈʌp/ (phr v)"},
+  {id:"fcpv_024",b:"hang up",f:"to suspend clothes on a hook or hanger",e:"hang up /ˌhæŋ ˈʌp/ (phr v)"},
+  {id:"fcpv_025",b:"point out",f:"to mention sth",e:"point out /pɔɪnt ˈaʊt/ (phr v)"},
+  {id:"fcpv_026",b:"take in",f:"to make clothes smaller",e:"take in /ˌteɪk ˈɪn/ (phr v)"},
+  {id:"fcpv_027",b:"take off",f:"to remove sth that you are wearing",e:"take off /ˌteɪk ˈɒf/ (phr v)"},
+  {id:"fcpv_028",b:"try on",f:"to put on a piece of clothing to see if it fits you or if you like it before buying it",e:"try on /ˌtraɪ ˈɒn/ (phr v)"},
+  {id:"fcpv_029",b:"try out",f:"to test sth to see if it works or is suitable",e:"try out /ˌtraɪ ˈaʊt/ (phr v)"},
+  {id:"fcpv_030",b:"wear away",f:"to cause sth to disintegrate slowly because it is used a lot",e:"wear away /ˌweər əˈweɪ/ (phr v)"},
+  {id:"fcpv_031",b:"wear out",f:"to use sth until it is no longer in good condition",e:"wear out /ˌweər ˈaʊt/ (phr v)"},
+  {id:"fcpv_032",b:"scroll through",f:"to move information on a computer screen up or down so that you can read it",e:"scroll through /skrəʊl θruː/ (phr v)"},
+  {id:"fcpv_033",b:"revolve",f:"to focus on sb",e:"revolve (around sb) /rɪˈvɒlv/ (phr v)"}
+],
+idm:[
+  {id:"fcidm_001",b:"hit the books",f:"to start studying very hard",e:"hit the books (idm)"},
+  {id:"fcidm_002",b:"as bold as brass",f:"(of a person) arrogant",e:"as bold as brass (idm)"},
+  {id:"fcidm_003",b:"as cold as ice",f:"(of a person) very unfriendly and unfeeling",e:"as cold as ice (idm)"},
+  {id:"fcidm_004",b:"as cool as a cucumber",f:"(of a person) very calm",e:"as cool as a cucumber (idm)"},
+  {id:"fcidm_005",b:"as hard as nails",f:"(of a person) very tough",e:"as hard as nails (idm)"},
+  {id:"fcidm_006",b:"as keen as mustard",f:"(of a person) very eager and enthusiastic",e:"as keen as mustard (idm)"},
+  {id:"fcidm_007",b:"as sly as a fox",f:"(of a person) very clever in a cunning way",e:"as sly as a fox (idm)"},
+  {id:"fcidm_008",b:"knight in shining armour",f:"sb who helps you in a difficult situation",e:"knight in shining armour (idm)"},
+  {id:"fcidm_009",b:"make hay while the sun shines",f:"to take advantage of a situation while it lasts",e:"make hay while the sun shines (idm)"},
+  {id:"fcidm_010",b:"rain or shine",f:"whatever the weather",e:"rain or shine (idm)"},
+  {id:"fcidm_011",b:"Rise and shine",f:"(in the imperative) Wake up and get out of bed!",e:"Rise and shine! (idm)"},
+  {id:"fcidm_012",b:"take a shine to sb",f:"to begin to like sb",e:"take a shine to sb (idm)"},
+  {id:"fcidm_013",b:"be all mouth and no trousers",f:"to talk boastfully about doing sth but never actually do it",e:"be all mouth and no trousers (idm)"},
+  {id:"fcidm_014",b:"money burns a hole in your pocket",f:"to feel the strong need to spend your money",e:"money burns a hole in your pocket (idm)"},
+  {id:"fcidm_015",b:"on a shoestring",f:"on a tight budget; without spending much money",e:"on a shoestring (idm)"},
+  {id:"fcidm_016",b:"roll up your sleeves",f:"to prepare for hard work",e:"roll up your sleeves (idm)"},
+  {id:"fcidm_017",b:"tighten your belt",f:"to make financial sacrifices by reducing your spending",e:"tighten your belt (idm)"},
+  {id:"fcidm_018",b:"with hat in hand",f:"in a humble manner",e:"with hat in hand (idm)"},
+  {id:"fcidm_019",b:"never judge a book by its cover",f:"we should never judge the value of sb/sth by their appearance",e:"never judge a book by its cover (idm)"},
+  {id:"fcidm_020",b:"be on the right track",f:"to act in such a way that you are likely to succeed in sth",e:"be on the right track (idm)"}
+]
+};
+
+var FC_LABELS={"fc-u1": "Word List: Unit 1", "fc-u2": "Word List: Unit 2", "fc-u3": "Word List: Unit 3", "fc-pv": "Word List: phrasal verbs", "fc-idm": "Word List: idioms"};
+var FC_CAT_CLASS={"fc-u1": "fcu1", "fc-u2": "fcu2", "fc-u3": "fcu3", "fc-pv": "fcpv", "fc-idm": "fcidm"};
+
+var fcCat="fc-u1", fcDeck=[], fcIdx=0, fcKnown=0, fcTotal=0;
+var fcHintLevel=0; // how many hint letters revealed per word
+
+function fcShuf(a){return a.slice().sort(function(){return Math.random()-.5})}
+
+function startFC(c){
+  fcCat=c;
+  var key=c.replace("fc-","");
+  fcDeck=fcShuf(FC[key]);
+  fcTotal=fcDeck.length;
+  fcIdx=0; fcKnown=0;
+  renderFC();
+}
+
+/* Build the blank-slots display for an answer string.
+   Each word gets its own group of letter boxes.
+   hintLevel = how many leading letters to reveal per word. */
+function buildBlanks(answer, hintLevel, cls){
+  /* split on spaces; handle slash-joined sub-words like at/by for display */
+  var rawWords=answer.split(/\s+/);
+  var html='<div class="fc-blanks">';
+  rawWords.forEach(function(rawW,wi){
+    var subWords=rawW.split("/");
+    subWords.forEach(function(w,si){
+      html+='<div class="fc-blank-word">';
+      for(var i=0;i<w.length;i++){
+        var lc=(cls==="correct-l"||cls==="wrong-l")?cls:(i<hintLevel?"revealed":"");
+        var ch=(lc!=="")?escH(w[i]):"&nbsp;";
+        html+='<span class="fc-letter '+lc+'">'+ch+'</span>';
+      }
+      html+='</div>';
+      if(si<subWords.length-1) html+='<div class="fc-blank-sep" style="padding:0 3px;color:var(--t3);font-size:11px">/</div>';
+    });
+    if(wi<rawWords.length-1) html+='<div class="fc-blank-sep"></div>';
+  });
+  html+='</div>';
+  return html;
+}
+
+/* Normalise answer for comparison */
+function fcNorm(s){
+  s=s.trim().toLowerCase();
+  /* normalise: treat slash as space, remove parens and other punctuation */
+  s=s.replace(/\//g," ").replace(/[^a-z\s]/g,"").replace(/\s+/g," ").trim();
+  return s;
+}
+
+function renderFC(){
+  var area=document.getElementById("fc-area");
+  document.getElementById("fc-title").textContent=FC_LABELS[fcCat];
+  document.getElementById("fc-pf").style.width=Math.round(fcKnown/fcTotal*100)+"%";
+
+  if(fcDeck.length===0){
+    document.getElementById("fc-ctr").textContent="";
+    var done=document.createElement("div"); done.className="fc-done";
+    done.innerHTML='<div class="fc-done-emoji">&#127881;</div>'+
+      '<div class="fc-done-title">Deck complete!</div>'+
+      '<div class="fc-done-sub">You answered all '+fcTotal+' cards correctly!</div>';
+    var rb=document.createElement("button"); rb.className="fc-restart";
+    rb.textContent="Start over";
+    rb.addEventListener("click",function(){startFC(fcCat);});
+    done.appendChild(rb);
+    area.innerHTML=""; area.appendChild(done);
+    return;
+  }
+
+  var card=fcDeck[0];
+  fcHintLevel=0;
+  document.getElementById("fc-ctr").textContent=fcKnown+" correct · "+fcDeck.length+" remaining";
+
+  var catCls=FC_CAT_CLASS[fcCat];
+  var catLabel={"fcu1": "Unit 1 word", "fcu2": "Unit 2 word", "fcu3": "Unit 3 word", "fcpv": "Phrasal verb", "fcidm": "Idiom"}[catCls];
+  var words=card.b.split(/\s+/);
+  var maxLen=Math.max.apply(null,words.map(function(w){return w.length}));
+
+  var html=
+    '<div class="fc-card" id="fc-card">'+
+      '<div class="fc-cat-tag '+catCls+'">'+catLabel+'</div>'+
+      '<div class="fc-def">'+escH(card.f)+'</div>'+
+      buildBlanks(card.b, 0, "")+
+      '<div class="fc-input-row">'+
+        '<input class="fc-input" id="fc-inp" type="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Type your answer…">'+
+        '<button class="fc-btn-check" id="fc-check">Check</button>'+
+      '</div>'+
+      '<div class="fc-hint-row">'+
+        '<button class="fc-btn-hint" id="fc-hint-btn">&#128161; Hint</button>'+
+        '<span class="fc-hint-msg" id="fc-hint-msg"></span>'+
+      '</div>'+
+      '<div class="fc-feedback" id="fc-feedback"></div>'+
+      '<div class="fc-next-row" id="fc-next-row" style="display:none">'+
+        '<button class="fc-btn-next" id="fc-btn-next"></button>'+
+        '<button class="fc-btn-skip" id="fc-btn-skip">Skip</button>'+
+      '</div>'+
+    '</div>';
+
+  area.innerHTML=html;
+
+  var inp=document.getElementById("fc-inp");
+  var checkBtn=document.getElementById("fc-check");
+  var hintBtn=document.getElementById("fc-hint-btn");
+  var hintMsg=document.getElementById("fc-hint-msg");
+  var feedback=document.getElementById("fc-feedback");
+  var nextRow=document.getElementById("fc-next-row");
+  var nextBtn=document.getElementById("fc-btn-next");
+  var skipBtn=document.getElementById("fc-btn-skip");
+
+  inp.focus();
+
+  /* --- HINT --- */
+  hintBtn.addEventListener("click",function(){
+    fcHintLevel++;
+    /* check if fully revealed: use normalised words to get max word length */
+    var normWords=fcNorm(card.b).split(/\s+/);
+    var maxLen=normWords.reduce(function(m,w){return Math.max(m,w.length)},0);
+    var fullyRevealed=(fcHintLevel>=maxLen);
+    refreshBlanks(card.b, fcHintLevel, "");
+    hintMsg.textContent="Revealed "+fcHintLevel+" letter"+(fcHintLevel>1?"s":"")+" per word";
+    if(fullyRevealed){
+      /* treated as wrong — user needed all hints */
+      hintBtn.disabled=true; inp.disabled=true; checkBtn.disabled=true;
+      var cardEl=document.getElementById("fc-card");
+      cardEl.classList.add("wrong");
+      refreshBlanks(card.b, 999, "wrong-l");
+      feedback.className="fc-feedback show err";
+      feedback.innerHTML="<strong>&#10007; Fully revealed — answer: "+escH(card.b)+"</strong>"+
+        '<div class="fc-ex">'+escH(card.e)+"</div>";
+      speakText(card.b, card.id);
+      nextBtn.textContent="Try again later";
+      nextRow.style.display="flex";
+      skipBtn.style.display="none";
+      nextBtn.onclick=function(){ fcWrong(); };
+    }
+  });
+
+  /* --- CHECK --- */
+  function doCheck(){
+    var typed=fcNorm(inp.value);
+    var correct=fcNorm(card.b);
+    inp.disabled=true; checkBtn.disabled=true; hintBtn.disabled=true;
+    if(typed===correct){
+      // Correct
+      var cardEl=document.getElementById("fc-card");
+      cardEl.classList.add("correct");
+      refreshBlanks(card.b, 999, "correct-l");
+      feedback.className="fc-feedback show cor";
+      feedback.innerHTML='<strong>&#10003; Correct!</strong>'+
+        '<div class="fc-ex">'+escH(card.e)+'</div>';
+      speakText(card.b, card.id);
+      nextBtn.textContent="Next card \u2192";
+      nextRow.style.display="flex";
+      nextBtn.addEventListener("click",function(){ fcCorrect(); });
+      skipBtn.style.display="none";
+    } else {
+      // Wrong
+      var cardEl=document.getElementById("fc-card");
+      cardEl.classList.add("wrong");
+      refreshBlanks(card.b, 999, "wrong-l");
+      feedback.className="fc-feedback show wro";
+      feedback.innerHTML='<strong>&#10007; The answer is: '+escH(card.b)+'</strong>'+
+        '<div class="fc-ex">'+escH(card.e)+'</div>';
+      speakText(card.b, card.id);
+      nextBtn.textContent="Try again later";
+      nextRow.style.display="flex";
+      nextBtn.addEventListener("click",function(){ fcWrong(); });
+    }
+  }
+
+  checkBtn.addEventListener("click", doCheck);
+  inp.addEventListener("keydown",function(e){ if(e.key==="Enter") doCheck(); });
+
+  skipBtn.addEventListener("click",function(){ fcSkip(); });
+}
+
+/* Rebuild the blanks section inside the existing card */
+function refreshBlanks(answer, hintLevel, cls){
+  var existing=document.querySelector(".fc-blanks");
+  if(!existing) return;
+  var tmp=document.createElement("div");
+  tmp.innerHTML=buildBlanks(answer, hintLevel, cls);
+  existing.replaceWith(tmp.firstChild);
+}
+
+function fcCorrect(){
+  // Card done – remove from deck
+  fcDeck.shift();
+  fcKnown++;
+  document.getElementById("fc-pf").style.width=Math.round(fcKnown/fcTotal*100)+"%";
+  renderFC();
+}
+
+function fcWrong(){
+  // Move card to a random spot 3-6 positions later
+  var card=fcDeck.shift();
+  var insertAt=Math.min(fcDeck.length, Math.floor(Math.random()*4)+3);
+  fcDeck.splice(insertAt,0,card);
+  renderFC();
+}
+
+function fcSkip(){
+  // Move to end, don't count as wrong
+  var card=fcDeck.shift();
+  fcDeck.push(card);
+  renderFC();
+}
+
+function escH(s){
+  if(!s) return "";
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+
+/* ═══════════════════════════════════════════════
+   AUDIO — the browser's English voice (Web Speech API).
+   This trainer has no pre-generated MP3 files.
+═══════════════════════════════════════════════ */
+var audioOn = (localStorage.getItem("ne13_audio") !== "0");
+var currentAudio = null;
+
+/* --- Web Speech fallback --- */
+var speechReady = false;
+var voiceEN = null;
+function initFallback(){
+  if(!window.speechSynthesis) return;
+  function pickVoice(){
+    var voices = window.speechSynthesis.getVoices();
+    if(!voices.length) return;
+    speechReady = true;
+    var preferred = ["Google UK English Female","Microsoft Libby","Samantha","Daniel","Karen"];
+    for(var p=0;p<preferred.length;p++){
+      for(var v=0;v<voices.length;v++){
+        if(voices[v].name.indexOf(preferred[p])!==-1){voiceEN=voices[v];return;}
+      }
+    }
+    for(var v=0;v<voices.length;v++){
+      if(voices[v].lang&&voices[v].lang.indexOf("en")===0){voiceEN=voices[v];return;}
+    }
+  }
+  pickVoice();
+  if(window.speechSynthesis.onvoiceschanged!==undefined)
+    window.speechSynthesis.onvoiceschanged=pickVoice;
+}
+function fallbackSpeak(text){
+  if(!window.speechSynthesis||!speechReady) return;
+  text=text.replace(/<[^>]*>/g,"");
+  window.speechSynthesis.cancel();
+  var utt=new SpeechSynthesisUtterance(text);
+  utt.lang="en-GB"; utt.rate=1.0; utt.pitch=1;
+  if(voiceEN) utt.voice=voiceEN;
+  window.speechSynthesis.speak(utt);
+}
+
+/* --- Main play function --- */
+function playAudio(id, fallbackText){
+  if(!audioOn) return;
+  fallbackSpeak(fallbackText);
+}
+
+function speakSentence(sentence, answer, id){
+  var text = sentence.replace("___", answer).replace(/<[^>]*>/g,"");
+  text = text.replace(/\b[AB]: /g,"");   /* Everyday English dialogues */
+  playAudio(id, text);
+}
+
+function speakText(text, id){
+  text = text.replace(/<[^>]*>/g,"");
+  playAudio(id, text);
+}
+
+/* --- Toggle button --- */
+function updAudioBtn(){
+  var btn=document.getElementById("audio-btn");
+  if(!btn) return;
+  btn.textContent = audioOn ? "\uD83D\uDD0A" : "\uD83D\uDD07";
+  btn.className   = "audio-btn"+(audioOn?" on":"");
+  btn.title       = audioOn ? "Audio on (click to mute)" : "Audio off (click to enable)";
+}
+function toggleAudio(){
+  audioOn=!audioOn;
+  localStorage.setItem("ne13_audio", audioOn?"1":"0");
+  updAudioBtn();
+  if(!audioOn && currentAudio){ currentAudio.pause(); currentAudio=null; }
+  if(!audioOn && window.speechSynthesis) window.speechSynthesis.cancel();
+}
+document.addEventListener("DOMContentLoaded",function(){
+  initFallback(); updAudioBtn();
+  var btn=document.getElementById("audio-btn");
+  if(btn) btn.addEventListener("click",toggleAudio);
+});
+setTimeout(initFallback,500);
+initFallback(); updAudioBtn();
+
+</script>
+</body>
+</html>
