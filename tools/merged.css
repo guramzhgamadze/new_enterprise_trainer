@@ -35,3 +35,13 @@ body.choosing{overflow:hidden}
   .chooser-cards{grid-template-columns:1fr}
   .chooser-title{font-size:24px}
 }
+/* ===== desktop layout (wider than 768px) ===== */
+@media not all and (max-width:768px){
+  /* the header with the part switch is 57px tall; the engine assumed 56px, which made the page
+     1px taller than the window and the side menu 1px longer than the space under the header */
+  .layout{min-height:calc(100vh - 57px)}
+  .sidebar{top:57px;height:calc(100vh - 57px)}
+  /* the mobile drawer never shows here, even if it was left open on a narrower window
+     (!important: openDrawer() sets display:block inline) */
+  .drawer,.drawer-overlay{display:none !important}
+}

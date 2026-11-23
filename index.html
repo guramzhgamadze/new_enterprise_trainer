@@ -362,6 +362,16 @@ body.choosing{overflow:hidden}
   .chooser-cards{grid-template-columns:1fr}
   .chooser-title{font-size:24px}
 }
+/* ===== desktop layout (wider than 768px) ===== */
+@media not all and (max-width:768px){
+  /* the header with the part switch is 57px tall; the engine assumed 56px, which made the page
+     1px taller than the window and the side menu 1px longer than the space under the header */
+  .layout{min-height:calc(100vh - 57px)}
+  .sidebar{top:57px;height:calc(100vh - 57px)}
+  /* the mobile drawer never shows here, even if it was left open on a narrower window
+     (!important: openDrawer() sets display:block inline) */
+  .drawer,.drawer-overlay{display:none !important}
+}
 </style>
 </head>
 <body>
@@ -2773,6 +2783,27 @@ window.addEventListener("hashchange", function () {
   if (NE_SHOW_CHOOSER) {
     document.getElementById("chooser").hidden = false;
     document.body.classList.add("choosing");
+  }
+})();
+
+/* ==================== DRAWER ON A WIDER WINDOW ====================
+   The mobile drawer (menu) opens below 768px. If the window then grows past 768px (a rotated
+   tablet, a widened or zoomed-out window), close it: otherwise it stays open over the desktop
+   layout and the page cannot scroll, because openDrawer() sets the body's overflow to hidden.
+   merged.css also hides the drawer on the desktop layout. closeDrawer() is defined in the engine
+   below (a function declaration in the same script, so it exists when this runs). */
+(function neCloseDrawerWhenWide() {
+  if (!window.matchMedia) return;
+  var narrow = window.matchMedia("(max-width: 768px)");
+  function onChange() {
+    if (!narrow.matches && document.getElementById("drawer").classList.contains("open")) {
+      closeDrawer();
+    }
+  }
+  if (narrow.addEventListener) {
+    narrow.addEventListener("change", onChange);
+  } else if (narrow.addListener) {
+    narrow.addListener(onChange);
   }
 })();
 

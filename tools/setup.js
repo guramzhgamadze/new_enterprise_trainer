@@ -99,3 +99,24 @@ window.addEventListener("hashchange", function () {
     document.body.classList.add("choosing");
   }
 })();
+
+/* ==================== DRAWER ON A WIDER WINDOW ====================
+   The mobile drawer (menu) opens below 768px. If the window then grows past 768px (a rotated
+   tablet, a widened or zoomed-out window), close it: otherwise it stays open over the desktop
+   layout and the page cannot scroll, because openDrawer() sets the body's overflow to hidden.
+   merged.css also hides the drawer on the desktop layout. closeDrawer() is defined in the engine
+   below (a function declaration in the same script, so it exists when this runs). */
+(function neCloseDrawerWhenWide() {
+  if (!window.matchMedia) return;
+  var narrow = window.matchMedia("(max-width: 768px)");
+  function onChange() {
+    if (!narrow.matches && document.getElementById("drawer").classList.contains("open")) {
+      closeDrawer();
+    }
+  }
+  if (narrow.addEventListener) {
+    narrow.addEventListener("change", onChange);
+  } else if (narrow.addListener) {
+    narrow.addListener(onChange);
+  }
+})();
