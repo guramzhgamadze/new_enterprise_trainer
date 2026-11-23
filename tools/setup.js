@@ -98,17 +98,6 @@ window.addEventListener("hashchange", function () {
     document.getElementById("chooser").hidden = false;
     document.body.classList.add("choosing");
   }
-  // On the desktop layout merged.css shows each "Mistakes" button of the side menu as a
-  // small red count next to its category; the button's own words become its tooltip.
-  var misButtons = document.querySelectorAll("#side-nav .mis-nb");
-  for (var m = 0; m < misButtons.length; m++) {
-    var words = "";
-    var nodes = misButtons[m].childNodes;
-    for (var n = 0; n < nodes.length; n++) {
-      if (nodes[n].nodeType === 3) words += nodes[n].textContent;
-    }
-    misButtons[m].title = words.trim();
-  }
 })();
 
 /* ==================== DRAWER ON A WIDER WINDOW ====================
